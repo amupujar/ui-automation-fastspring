@@ -1,0 +1,2296 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="app" ng-controller="controller" ng-init="page='product'" ng-csp="" class="ng-scope"><head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,  minimum-scale=1.0" />
+    <meta id="viewBranch" name="version" content="Version-0.15.0-stable" />
+
+    <link rel="apple-touch-icon" href="https://d1f8f9xcsvx3ha.cloudfront.net/themes/images/fastspring-310x310.png" />
+    <link rel="icon" href="" />
+
+    <title ng-bind="variables.title" class="ng-binding">FastSpring Checkout</title>
+
+    <link rel="stylesheet" href="https://d1f8f9xcsvx3ha.cloudfront.net/themes/css/0/css/common.min.css" />
+
+    <link rel="stylesheet" href="https://d1zrkw1vilkm2v.cloudfront.net/gVJK5OAoRmg/VEqrqc9JQhI/resources/ng-csp.gz.css" />
+    <link rel="stylesheet" href="https://d1zrkw1vilkm2v.cloudfront.net/gVJK5OAoRmg/VEqrqc9JQhI/resources/common.gz.css" />
+
+    <!-- Include one of selected fonts from cdn   -->
+    <!-- ngIf: variables.font != 'Helvetica-Neue' -->
+
+    <!--[if lte IE 9]>
+    <link rel="stylesheet" href="https://d1zrkw1vilkm2v.cloudfront.net/gVJK5OAoRmg/VEqrqc9JQhI/resources/common.ie.gz.css"/>
+    <![endif]-->
+</head>
+
+<!-- Body -->
+<!-- Product.html  -->
+<body id="app" class="loaded modal-open" require-email="">
+<div class="body-footer">
+    <div id="app-content">
+
+    <div class="navbar navbar-default requires-load" ng-class="{'fluid' : (variables.logoHandling == 'resizeHeader'), 'navbar-fixed-top' : ((!variables.logoHandling == 'resizeHeader') || (variables.topbarFreezing == 'true')) }">
+        <!-- ngIf: !session.live --><div ng-if="!session.live" class="test-label requires-load ng-scope">
+            <span class="label label-warning ng-scope" ns-popover="" ns-popover-placement="bottom|center" ns-popover-template="testMode.html">Test Mode <i class="glyphicon glyphicon-question-sign"></i></span>
+        </div><!-- end ngIf: !session.live -->
+        <div class="container">
+            <div class="navbar-header">
+                <div id="navbar-brand" class="navbar-brand">
+                    <a href="/">
+                        <!-- ngIf: variables.logoHandling == 'resizeLogo' -->
+
+                        <img retina-image="" class="logo-retina" alt="logo" ng-hide="(variables.logoHandling == 'resizeLogo') || variables.logo || variables.logoRetina" src="https://d1zrkw1vilkm2v.cloudfront.net/gVJK5OAoRmg/VEqrqc9JQhI/resources/fastspring.checkout@2x.png" />
+                        <!-- ngIf: (variables.logo) && (!variables.logoRetina) -->
+                        <!-- ngIf: variables.logoRetina -->
+                    </a>
+                </div>
+            </div>
+            <div class="navbar-right">
+                <!--
+                    Locale
+                 -->
+                <div class="btn-group navbar-btn requires-load" ng-hide="variables.countrySelector=='hidden'">
+                  <button ng-click="showLocaleDialog()" type="button" ng-class="{'disabled':variables.countrySelector =='disabled'}" class="btn btn-default btn-sm dropdown-toggle">
+                    <div class="country-icon" ng-style="countryIconCss()" style="background-image: url(&quot;https://dcnz2rrcot657.cloudfront.net/country/shiny/24/US.png&quot;);">
+                    <span class="hidden-xs ng-binding" ng-bind-html="countryDisplay">United States</span>
+                    <span ng-class="{'locale-lang-is-default': defaultLanguage}" class="hidden-xs locale-lang ng-binding locale-lang-is-default" ng-bind-html="languageDisplay">English</span>
+                    <span class="caret" ng-hide="variables.countrySelector =='disabled'"></span>
+                    </div>
+                  </button>
+                </div>
+
+            </div>
+            <nav id="header" ng-show="variables.header" class="ng-hide">
+                <div class="inline-block ng-binding" ng-bind-html="variables.header"></div>
+            </nav>
+        </div>
+    </div>
+
+    <div id="content" class="content">
+    <div class="container requires-load">
+
+
+    <!--
+        Messages
+     -->
+    <div ng-show="messages.length" class="ng-hide">
+    <!-- ngRepeat: msg in messages -->
+    </div>
+
+    <!--
+        Empty Cart
+     -->
+    <div ng-hide="groups.length" class="ng-hide">
+    <div class="well ng-binding">Your Order Is Empty</div>
+    </div>
+
+    <!--
+        Layout
+     -->
+    <div class="row" ng-show="groups.length">
+    <div class="col-md-9">
+
+
+    <!--
+        Begin Secondary Offers Above Panel
+        Replacements and other offers  are always located in groups[0].items[0].groups
+        groups[0].items[0] is a cart driver  on product page. Only on product page driver is one
+    -->
+    <!-- ngRepeat: offer in groups[0].items[0].groups -->
+
+    <!-- Additions only - this takes into account the high level groups with type add -->
+    <!-- Always locatedt in top level group, for ex. group[1] -->
+    <!-- ngRepeat: offer in groups |filter: {type: 'add'} -->
+    <!--
+        End Secondary Offers
+    -->
+
+
+    <!--
+        Order Contents
+     -->
+    <div id="panel-order" class="panel panel-custom panel-default">
+        <div class="panel-heading">
+        <h3 class="panel-title ng-binding" ng-class="{'text-center': variables.textAlign == 'center', 'text-right': variables.textAlign == 'right'}">
+            <span class="glyphicon glyphicon-shopping-cart"></span> Your Order
+        </h3>
+        </div>
+
+        <div ng-show="groups.length" class="relative">
+        <div class="app-update-indicator">
+            <span class="glyphicon glyphicon-refresh"></span>
+            <span class="sr-only ng-binding">Updating</span>
+        </div>
+
+        <div class="table">
+            <!-- begin order level groups -->
+            <!-- ngRepeat: orderGroup in offers.orderArray --><div class="table-offer ng-scope" ng-repeat-start="orderGroup in offers.orderArray"> </div>
+
+            <!-- show top level group display -->
+            <!-- <div class="group tr col-sm-12" ng-class="{'hidden': ((orderGroup.display == null) || orderGroup.selections == false) || orderGroup.items.length == 0}">
+                <td colspan="4" ng-hide="orderGroup.selections == true">
+                    <h4 ng-bind-html="orderGroup.display" ng-class="{'text-center': variables.textAlign == 'center', 'text-right': variables.textAlign == 'right'}" ></h4>
+                </td>
+            </div> -->
+
+            <!-- begin top level items -->
+            <!-- ngRepeat: item in orderGroup.items | filter: {selected: 'true'} --><div class="top-level-item tr ng-scope" ng-repeat-start="item in orderGroup.items | filter: {selected: 'true'}"></div>
+
+            <!-- show top level item -->
+            <table id="amruta-20181212" class="table no-padding no-margin ng-scope ng-isolate-scope" data-item-row="" item="item" replitems="replItems" offer="orderGroup" language="languageObj">
+        <tbody><tr ng-class="item.styleClass">
+            <td align="center" class="product-cell">
+                <div ng-style="imageStyle(item)" ng-show="item.image" ng-class="{'offer-image': isOffer, 'product-image' : !isOffer, 'in-cart': item.selected}" class="product-image in-cart" style="background-image: url(&quot;https://d38v6yr1d77bzy.cloudfront.net/gVJK5OAoRmg/nkcqZCVKQuw/individual-mosaic.jpg&quot;);"> </div>
+            </td>
+            <td class="description-cell">
+                <div>
+                    <strong class="product-title ng-isolate-scope" product-title="" item="item" currency="order.currency">
+        <span ng-hide="item.description.full" ng-bind-html="item.display" class="ng-binding ng-hide">First Attempt</span>
+        <a ng-show="item.description.full" ng-click="showDescription(item)" href="" ng-bind-html="item.display" class="ng-binding">First Attempt</a>
+        <span class="glyphicon glyphicon-search item-description-tooltip ng-hide" ng-show="item.description.tooltip" tooltip-placement="bottom" tooltip-html-unsafe=""></span>
+    </strong>
+                    <!-- //Custom badges from attributes -->
+                    <!-- ngIf: item.bundle -->
+                    <!-- ngIf: item.attributes.customBadge -->
+
+            </div>
+
+            <!-- //Renew/renews part -->
+            <!-- ngIf: item.subscription --><div ng-if="item.subscription" renews-checkbox="" subscription="item.subscription" item="item" language="language" class="ng-scope ng-isolate-scope">
+    <!-- //Renews every [period length] starting today and ending on [end date] -->
+    <div ng-hide="subscriptionType.adhoc" class="bordered-muted inline-block renews-block text-muted">
+
+        <!-- ngIf: !subscription.unequalIntervals --><span ng-if="!subscription.unequalIntervals" class="ng-scope">
+            <!-- ngIf: item.autoRenew && language.language == 'de' -->
+            <!-- ngIf: item.autoRenew && language.language != 'de' --><span ng-if="item.autoRenew &amp;&amp; language.language != 'de'" class="ng-binding ng-scope"> Renews every  month </span><!-- end ngIf: item.autoRenew && language.language != 'de' -->
+
+            <!-- //Free: Renews every {x} for free -->
+            <!-- ngIf: subscriptionType.free -->
+
+            <!-- //not free: Renews every {x}. First/next charge: {y} on {z} -->
+            <!-- ngIf: !subscriptionType.free --><span ng-if="!subscriptionType.free" class="ng-scope">
+                <span class="comma">.</span>
+                <!-- ngIf: subscriptionType.hasTrial && subscription.nextChargeTotal --><span ng-if="subscriptionType.hasTrial &amp;&amp; subscription.nextChargeTotal" class="ng-binding ng-scope"> First charge: $14.95</span><!-- end ngIf: subscriptionType.hasTrial && subscription.nextChargeTotal -->
+                <!-- ngIf: !subscriptionType.hasTrial && subscription.nextChargeTotal -->
+                <!-- ngIf: addonSelected(item) -->
+                <!-- ngIf: subscription.nextChargeDateValue --><span ng-if="subscription.nextChargeDateValue" class="ng-binding ng-scope"> on Dec 22, 2018</span><!-- end ngIf: subscription.nextChargeDateValue -->
+            </span><!-- end ngIf: !subscriptionType.free -->
+
+            <!-- //Finite: Ends on {x} -->
+            <!-- ngIf: subscriptionType.finiteEndDate -->
+        </span><!-- end ngIf: !subscription.unequalIntervals -->
+        <!-- ngIf: item.autoRenew && subscription.unequalIntervals -->
+    </div>
+
+    <!-- //Adhoc -->
+    <div ng-show="subscriptionType.adhoc" class="bordered-muted inline-block renews-block text-muted ng-hide">
+        <span class="ng-binding"> Renews automatically by the seller </span>
+    </div>
+
+</div><!-- end ngIf: item.subscription -->
+
+            <!-- //end subscription renews part -->
+
+            <div class="text-muted ng-binding" ng-show="item.description.summary" ng-bind-html="item.description.summary"><p>String</p></div>
+            <div class="small ng-binding ng-hide" ng-show="item.terms" ng-bind-html="item.terms"></div>
+            <div class="text-info small ng-hide" ng-show="item.offer"><span class="glyphicon glyphicon-tag"></span> <span ng-bind-html="item.offer" class="ng-binding"></span></div>
+            <!-- //this should be inside only -->
+
+            <!--// the following used for bundles only-->
+            <!-- ngRepeat: ordergroup in item.groups -->
+            <!--// end of bundles only template-->
+
+
+        </td>
+
+        <td class="last-price-row hidden-xs">
+            <!-- ngIf: !item.autoRenew || item.subscription.intervalUnit=='adhoc' -->
+            <!-- ngIf: item.autoRenew && !(item.subscription.intervalUnit=='adhoc') --><!-- ngInclude: 'subscriptions-price-row.html' --><div ng-if="item.autoRenew &amp;&amp; !(item.subscription.intervalUnit=='adhoc')" ng-include="'subscriptions-price-row.html'" class="ng-scope">
+    <!-- //Iterate instrunctions -->
+    <!-- ngRepeat: instruction in item.subscription.instructions --><!-- ngIf: $index == 0 || item.subscription.showSubscriptionTerms --><div class="future-row ng-scope" ng-repeat="instruction in item.subscription.instructions" ng-if="$index == 0 || item.subscription.showSubscriptionTerms">
+        <!-- ngIf: instruction.type != 'trial' -->
+        <!-- ngIf: instruction.type == 'trial' --><!-- ngInclude: 'subscription-trial.html' --><div ng-if="instruction.type == 'trial'" ng-include="'subscription-trial.html'" class="ng-scope">
+    <!-- ngInclude: 'price-row-first.html' --><div ng-include="'price-row-first.html'" class="ng-scope">
+    <!--//old price-->
+    <!-- ngIf: instruction.discountPercentValue > 0 && instruction.type != 'trial' -->
+
+    <div class="price-row ng-scope">
+        <!--//price-->
+        <!-- ngIf: item.pricing.quantity == 'allow' --><strong ng-if="item.pricing.quantity == 'allow'" ng-hide="showTerms &amp;&amp; instruction.totalValue === 0 &amp;&amp; instruction.discountTotalValue === 0 &amp;&amp; variables.hideFree === 'true'" class="price-item price price-color-free">$0.00</strong><!-- end ngIf: item.pricing.quantity == 'allow' -->
+            <!--//Total price for all items if quantity locked or hidden-->
+        <!-- ngIf: !(item.pricing.quantity == 'allow') -->
+
+        <!-- ngInclude: 'quantity.html' --><div ng-include="'quantity.html'" class="ng-scope">
+    <!-- //Allow- Quantity Editable (+ optional delete via 0) -->
+    <div ng-show="item.selected &amp;&amp; item.pricing.quantity == 'allow'" class="price-item ng-scope">
+        <select ng-hide="useQuantityInput(item)" class="item-quantity-input form-control input-sm inline-block ng-pristine ng-valid" ng-model="item.stagedQuantity" ng-change="changeQuantity(item, false)">
+            <!-- ngIf: item.removable -->
+            <!-- ngIf: item.maxquantity > 0 --><option ng-if="item.maxquantity &gt; 0" value="1" class="ng-scope">1</option><!-- end ngIf: item.maxquantity > 0 -->
+            <!-- ngIf: item.maxquantity > 1 --><option ng-if="item.maxquantity &gt; 1" value="2" class="ng-scope">2</option><!-- end ngIf: item.maxquantity > 1 -->
+            <!-- ngIf: item.maxquantity > 2 --><option ng-if="item.maxquantity &gt; 2" value="3" class="ng-scope">3</option><!-- end ngIf: item.maxquantity > 2 -->
+            <!-- ngIf: item.maxquantity > 3 --><option ng-if="item.maxquantity &gt; 3" value="4" class="ng-scope">4</option><!-- end ngIf: item.maxquantity > 3 -->
+            <!-- ngIf: item.maxquantity > 4 --><option ng-if="item.maxquantity &gt; 4" value="5" class="ng-scope">5</option><!-- end ngIf: item.maxquantity > 4 -->
+            <!-- ngIf: item.maxquantity > 5 --><option ng-if="item.maxquantity &gt; 5" value="6" class="ng-scope">6</option><!-- end ngIf: item.maxquantity > 5 -->
+            <!-- ngIf: item.maxquantity > 6 --><option ng-if="item.maxquantity &gt; 6" value="7" class="ng-scope">7</option><!-- end ngIf: item.maxquantity > 6 -->
+            <!-- ngIf: item.maxquantity > 7 --><option ng-if="item.maxquantity &gt; 7" value="8" class="ng-scope">8</option><!-- end ngIf: item.maxquantity > 7 -->
+            <!-- ngIf: item.maxquantity > 8 --><option ng-if="item.maxquantity &gt; 8" value="9" class="ng-scope">9</option><!-- end ngIf: item.maxquantity > 8 -->
+            <!-- ngIf: item.maxquantity > 9 --><option ng-if="item.maxquantity &gt; 9" value="10" class="ng-scope">10+</option><!-- end ngIf: item.maxquantity > 9 -->
+
+        </select>
+
+        <div ng-show="useQuantityInput(item)" class="price-item ng-hide">
+            <div><input type="tel" class="item-quantity-input form-control input-sm ng-pristine ng-valid" ng-model="item.stagedQuantity" /></div>
+            <div><a href="" class="small text-muted ng-binding" ng-click="changeQuantity(item, true)">Update</a></div>
+        </div>
+    </div>
+
+    <!-- //Lock - Quantity Not Editable + NOT Removable , and quantity > 0 -->
+    <div ng-show="item.pricing.quantity == 'lock' &amp;&amp; item.quantity &gt; 0" class="price-item ng-scope ng-hide">
+        <span class="badge ng-binding"> for 1</span>
+    </div>
+
+    <!-- //Remove button - Quantity Not Editable + Removable -->
+    <div ng-show="item.selected &amp;&amp; item.removable &amp;&amp; removeButtonVisibility != 'hidden'" class="price-item ng-scope ng-hide">
+        <a class="dotted text-muted small ng-binding" ng-click="deleteItem(item)"> Remove </a>
+    </div>
+</div>
+    </div> <!--//end of price-row-div-->
+</div>
+
+    <!-- ngIf: item.subscription.showSubscriptionTerms -->
+</div><!-- end ngIf: instruction.type == 'trial' -->
+    </div><!-- end ngIf: $index == 0 || item.subscription.showSubscriptionTerms --><!-- end ngRepeat: instruction in item.subscription.instructions --><!-- ngIf: $index == 0 || item.subscription.showSubscriptionTerms --><!-- end ngRepeat: instruction in item.subscription.instructions -->
+
+    <a class="price-item ng-binding ng-scope" ng-show="!item.subscription.showSubscriptionTerms" ng-click="item.subscription.showSubscriptionTerms = !item.subscription.showSubscriptionTerms"> Subscription terms </a>
+    <a class="price-item ng-binding ng-scope ng-hide" ng-show="item.subscription.showSubscriptionTerms" ng-click="item.subscription.showSubscriptionTerms = !item.subscription.showSubscriptionTerms"> Hide subscription terms </a>
+
+    <div ng-show="!item.selected &amp;&amp; !showTerms" class="list-add-product-btn ng-scope ng-hide">
+        <!-- ngIf: variables.purchaseBtn == 'addToCart' || variables.purchaseBtn == 'openProduct' --><button class="btn btn-sm addToCartBtn ng-scope ng-hide" ng-if="variables.purchaseBtn == 'addToCart' || variables.purchaseBtn == 'openProduct'" ng-hide="item.selected || (variables.purchaseBtn == 'hide')" ng-click="changeQuantity(item, true)">
+            <span ng-show="item.description.action" ng-bind-html="item.description.action" class="ng-binding">String</span>
+            <span ng-hide="item.description.action" class="ng-binding ng-hide"> Add </span>
+        </button><!-- end ngIf: variables.purchaseBtn == 'addToCart' || variables.purchaseBtn == 'openProduct' -->
+    </div>
+</div><!-- end ngIf: item.autoRenew && !(item.subscription.intervalUnit=='adhoc') -->
+        </td>
+    </tr>
+</tbody></table>
+
+            <!-- ngRepeat: ordergroup in item.groups -->
+            <!-- ngRepeat: ordergroup in offers.configAddonCombined -->
+
+            <div class="tr visible-xs additional-row ng-scope"> <div class="td"></div> <div class="td ng-isolate-scope" data-price-row="" item="item" offer="orderGroup">
+    <!--//old price-->
+    <!-- ngIf: item.unitDiscountValue -->
+
+    <div class="price-row">
+        <!--//price-->
+        <!-- ngIf: item.pricing.quantity == 'allow' && item.subscription.intervalUnit == 'adhoc' -->
+        <!-- ngIf: item.pricing.quantity == 'allow' && item.subscription.intervalUnit != 'adhoc' --><strong ng-if="item.pricing.quantity == 'allow' &amp;&amp; item.subscription.intervalUnit != 'adhoc'" ng-hide="showTerms &amp;&amp; item.unitPriceValue === 0 &amp;&amp; variables.hideFree === 'true' &amp;&amp; item.unitDiscountValue === 0" class="price-item price price-color-free">Free</strong><!-- end ngIf: item.pricing.quantity == 'allow' && item.subscription.intervalUnit != 'adhoc' -->
+        <!--//Total price for all items if quantity locked or hidden-->
+        <!-- ngIf: !(item.pricing.quantity == 'allow') -->
+
+        <!-- ngInclude: 'quantity.html' --><div ng-include="'quantity.html'" class="ng-scope">
+    <!-- //Allow- Quantity Editable (+ optional delete via 0) -->
+    <div ng-show="item.selected &amp;&amp; item.pricing.quantity == 'allow'" class="price-item ng-scope">
+        <select ng-hide="useQuantityInput(item)" class="item-quantity-input form-control input-sm inline-block ng-pristine ng-valid" ng-model="item.stagedQuantity" ng-change="changeQuantity(item, false)">
+            <!-- ngIf: item.removable -->
+            <!-- ngIf: item.maxquantity > 0 --><option ng-if="item.maxquantity &gt; 0" value="1" class="ng-scope">1</option><!-- end ngIf: item.maxquantity > 0 -->
+            <!-- ngIf: item.maxquantity > 1 --><option ng-if="item.maxquantity &gt; 1" value="2" class="ng-scope">2</option><!-- end ngIf: item.maxquantity > 1 -->
+            <!-- ngIf: item.maxquantity > 2 --><option ng-if="item.maxquantity &gt; 2" value="3" class="ng-scope">3</option><!-- end ngIf: item.maxquantity > 2 -->
+            <!-- ngIf: item.maxquantity > 3 --><option ng-if="item.maxquantity &gt; 3" value="4" class="ng-scope">4</option><!-- end ngIf: item.maxquantity > 3 -->
+            <!-- ngIf: item.maxquantity > 4 --><option ng-if="item.maxquantity &gt; 4" value="5" class="ng-scope">5</option><!-- end ngIf: item.maxquantity > 4 -->
+            <!-- ngIf: item.maxquantity > 5 --><option ng-if="item.maxquantity &gt; 5" value="6" class="ng-scope">6</option><!-- end ngIf: item.maxquantity > 5 -->
+            <!-- ngIf: item.maxquantity > 6 --><option ng-if="item.maxquantity &gt; 6" value="7" class="ng-scope">7</option><!-- end ngIf: item.maxquantity > 6 -->
+            <!-- ngIf: item.maxquantity > 7 --><option ng-if="item.maxquantity &gt; 7" value="8" class="ng-scope">8</option><!-- end ngIf: item.maxquantity > 7 -->
+            <!-- ngIf: item.maxquantity > 8 --><option ng-if="item.maxquantity &gt; 8" value="9" class="ng-scope">9</option><!-- end ngIf: item.maxquantity > 8 -->
+            <!-- ngIf: item.maxquantity > 9 --><option ng-if="item.maxquantity &gt; 9" value="10" class="ng-scope">10+</option><!-- end ngIf: item.maxquantity > 9 -->
+
+        </select>
+
+        <div ng-show="useQuantityInput(item)" class="price-item ng-hide">
+            <div><input type="tel" class="item-quantity-input form-control input-sm ng-pristine ng-valid" ng-model="item.stagedQuantity" /></div>
+            <div><a href="" class="small text-muted ng-binding" ng-click="changeQuantity(item, true)">Update</a></div>
+        </div>
+    </div>
+
+    <!-- //Lock - Quantity Not Editable + NOT Removable , and quantity > 0 -->
+    <div ng-show="item.pricing.quantity == 'lock' &amp;&amp; item.quantity &gt; 0" class="price-item ng-scope ng-hide">
+        <span class="badge ng-binding"> for 1</span>
+    </div>
+
+    <!-- //Remove button - Quantity Not Editable + Removable -->
+    <div ng-show="item.selected &amp;&amp; item.removable &amp;&amp; removeButtonVisibility != 'hidden'" class="price-item ng-scope ng-hide">
+        <a class="dotted text-muted small ng-binding" ng-click="deleteItem(item)"> Remove </a>
+    </div>
+</div>
+    </div> <!--//end of price-row-div-->
+
+    <!--//Unselected - Button with action-->
+    <div>
+        <button ng-hide="item.selected || showTerms" class="btn btn-sm ng-hide" ng-click="acceptOffer(item, offer.type)" ng-class="BtnClass(offer)">
+            <span ng-show="item.description.action" ng-bind-html="item.description.action" class="ng-binding">String</span>
+            <span ng-hide="item.description.action" class="ng-binding ng-hide"> Add </span>
+        </button>
+    </div>
+
+    <!--//Volume pricing -->
+    <!-- ngInclude: 'volume-pricing.html' --><div ng-show="item.selected &amp;&amp; item.discount.data.tiers.length&gt;0" ng-include="'volume-pricing.html'" class="ng-scope ng-hide">
+    <small class="price-item nowrap-text small dotted text-muted ng-scope ng-binding" tooltip-placement="bottom" tooltip-trigger="" tooltip-html-unsafe="&#10;        &lt;!-- ngRepeat: tier in item.discount.data.tiers --&gt;&#10;    "> Volume Discounts Available </small>
+</div>
+
+    <!-- //You save text -->
+    <div ng-show="item.selected &amp;&amp; item.discountPercent &amp;&amp; item.discountTotalValue != 0" class="nowrap-text price-item text-success small ng-hide">
+        <div class="ng-binding">You Save
+            $0.00 ()
+        </div>
+    </div>
+
+    <!--//Coupon discount reason  text  -->
+    <div ng-show="item.discount.reason" class="ng-hide">
+        <p class="price-item small text-muted ng-binding">  </p><p>
+    </p></div>
+</div></div>
+
+            <!-- //Begin belowdriver offers -->
+            <div class="tr popover bottom ng-scope ng-hide" ng-show="offers.belowdriver[item.path].length&gt; 0">
+                <div class="arrow"></div>
+                <!-- ngRepeat: group in offers.belowdriver[item.path] track by $index -->
+            </div>
+
+
+            <!-- begin item level groups ( bundles are filtered from here) -->
+            <!-- ngRepeat: itemGroup in item.groups |filter: {type: !'bundle'} -->
+
+
+            <div ng-repeat-end="" class="ng-scope"></div><!-- end ngRepeat: item in orderGroup.items | filter: {selected: 'true'} --> <!--//end  top level items - item in orderGroup.items-->
+            <div ng-repeat-end="" class="ng-scope"> </div><!-- end ngRepeat: orderGroup in offers.orderArray -->  <!-- //end  order level groups -->
+        </div>
+    </div>
+
+    <!-- Replacements only, since Additions are one level on top -->
+    <!-- if display position = inside begin item level groups  -->
+    <!-- ngRepeat: orderGroup in groups[0].items[0].groups -->
+
+    <!-- Addition top level handling if display inside  -->
+    <!-- ngRepeat: orderGroup in groups  |filter: {type: 'add'} -->
+
+
+    <div class="panel-footer" ng-show="showFooterWithCoupon()">
+        <div class="row row-with-coupon">
+            <div class="text-right coupon-input">
+                <!-- Sheerid promotions -->
+                <!-- One Option -->
+                <a ng-show="promotionOptions.length == 1" href="" ng-click="openDiscountIframe(promotionOptions[0])" class="ng-binding ng-hide"> Get Student Discount</a>
+                <!-- Many Options -->
+                <span class="dropdown ng-hide" ng-show="promotionOptions.length &gt; 1" dropdown="" on-toggle="toggled(open)">
+                    <a href="" id="dropdownSheerId" dropdown-toggle="" class="ng-binding" aria-haspopup="true" aria-expanded="false"> Get Occupational Discount<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSheerId">
+                        <!-- ngRepeat: option in promotionOptions -->
+                    </ul>
+                </span>
+
+                <!-- Separator -->
+                <span ng-show="showSeparator()" class="vertical-separator ng-hide"> | </span>
+
+                <!-- Coupon -->
+                <a ng-show="variables.showCouponField == 'true' &amp;&amp; !showCouponInput" href="" ng-click="showCouponInput = true" class="ng-binding ng-hide">Enter Promotional Code</a>
+
+                <label ng-show="variables.showCouponField == 'true' &amp;&amp; showCouponInput" class="sr-only ng-binding" for="order-coupons">Coupon Code</label>
+                <input ng-show="variables.showCouponField == 'true' &amp;&amp; showCouponInput" id="order-coupons" type="text" ng-model="couponString" class="form-control input-sm ng-pristine ng-valid" placeholder="Coupon Code" />
+            </div>
+            <div>
+                <button ng-show="variables.showCouponField == 'true' &amp;&amp; showCouponInput" ng-disabled="hasCoupons() == false" class="btn btn-sm btn-default ng-binding" ng-click="applyCoupons()" disabled="disabled">Apply</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+    <!--
+        End Order Contents
+    -->
+
+
+    <!-- Begin Secondary Offers Below Order Panel   -->
+
+    <!-- TBD: this only takes into account the first top level item.-->
+    <!-- groups[0].items[0] is a cart driver  on product page. Only on product page driver is one -->
+    <!-- ngRepeat: offer in groups[0].items[0].groups -->
+    <!-- Additions only - this takes into account the high level groups with type ADD -->
+    <!-- ngRepeat: offer in groups |filter: {type: 'add'} -->
+
+    <!-- End Secondary Offers -->
+
+    </div> <!-- col-ms-9 -->
+    <div class="col-md-3">
+
+    <!--
+        Payment Options
+     -->
+    <div id="panel-payment" class="panel panel-custom panel-default requires-load">
+        <div class="panel-heading">
+            <h3 class="panel-title" ng-class="{'text-center': variables.textAlign == 'center', 'text-right': variables.textAlign == 'right'}">
+                <span class="glyphicon glyphicon-credit-card"></span> <span ng-bind-html="'PaymentSectionTitle' | phrase" class="ng-binding">Your Payment</span>
+            </h3>
+        </div>
+
+        <div class="panel-body">
+            <!-- Email field if enabled in Theme Settings -->
+            <!-- ngIf: showContact && variables.showEmailOnCartPage == 'both' --><form name="form" ng-if="showContact &amp;&amp; variables.showEmailOnCartPage == 'both'" class="form-group ng-scope ng-valid-required ng-dirty ng-valid ng-valid-email" ng-class="validationClass(form['contact.email'])">
+                <label class="sr-only ng-binding" for="contact-email">Email</label> <span class="placeholder ng-binding">Email</span>
+                <div class="input-group" ng-class="validationClass(form['contact.email'])">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
+                    <input input-model="" email="contact.email" ng-required="option.requireContact" name="contact.email" type="email" autocompletetype="email" spellcheck="off" autocorrect="off" ng-change="resetRemoteValidation(form['contact.email'])" ng-blur="sendEmailGa(form['contact.email'],'Homepage')" ng-model="contact.email" class="form-control ng-isolate-scope ng-valid-required ng-dirty ng-valid ng-valid-email" id="contact-email" placeholder="Email" />
+                </div>
+            </form><!-- end ngIf: showContact && variables.showEmailOnCartPage == 'both' -->
+
+            <!-- ngIf: variables.collectingEmailCheckbox != 'hide' --><div ng-if="variables.collectingEmailCheckbox != 'hide'" class="mailing-list-subscribe-area ng-scope">
+                <label for="mailing-list-subscribe">
+                    <input ng-model="mailingList.subscribe" id="mailing-list-subscribe" type="checkbox" class="ng-pristine ng-valid" />
+                    <span class="ng-binding">Get updates about our products and offerings</span>
+                </label>
+            </div><!-- end ngIf: variables.collectingEmailCheckbox != 'hide' -->
+            <div class="well total-well" ng-show="taxType == 'US' &amp;&amp; paymentOptionType != 'free'">
+                <div class="row">
+                    <div class="col-xs-12 text-right">
+                        <span class="total-label pull-left ng-binding">Subtotal</span>
+                        <span class="total-price price-color-free">$0.00</span>
+                        <span class="glyphicon glyphicon-refresh total-price-refresh"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="well total-well ng-hide" ng-show="(taxType != 'US' &amp;&amp; paymentOptionType != 'free') || ((taxType == 'EU' || taxType == 'VAT') &amp;&amp; (totalValue != 0 || paymentOptions.length &gt; 1))">
+                <div class="row">
+                    <div class="col-xs-12 text-right">
+                        <span class="total-label pull-left ng-binding">Total</span>
+
+                        <span class="total-price price-color-free">$0.00</span>
+                        <span class="glyphicon glyphicon-refresh total-price-refresh"></span>
+
+                        <!-- If paymentOptions is greater than 1 and totalValue is 0, then that means there's a free trial -->
+                        <div ng-show="!taxExempt" class="taxInfo">
+                            <div ng-show="taxType == 'VAT' &amp;&amp; (totalValue != 0 || paymentOptions.length &gt; 1)" class="small text-right ng-hide">
+                                <em class="ng-binding">Includes VAT <span ng-show="tax" class="ng-binding">$0.00</span> (<span ng-show="taxRate" class="ng-binding">0%</span>)</em>
+                                <br class="visible-lg" />
+                                <a href="#" ng-show="variables.showVatLink == 'true'" ng-click="showTaxExemptDialog()" class=""><em class="ng-binding">Enter VAT ID</em></a>
+                            </div>
+                            <div ng-show="taxType == 'SERVICE' &amp;&amp; totalValue != 0" class="small text-right ng-hide">
+                                <em class="ng-binding">Includes Service Tax <span ng-show="tax" class="ng-binding">$0.00</span> (<span ng-show="taxRate" class="ng-binding">0%</span>)</em>
+                                <br class="visible-lg" />
+                                <a href="#" ng-show="variables.showVatLink == 'true'" ng-click="showTaxExemptDialog()" class=""><em class="ng-binding">Enter Service Tax ID</em></a>
+                            </div>
+                            <div ng-show="taxType == 'GST' &amp;&amp; (totalValue != 0 || paymentOptions.length &gt; 1)" class="small text-right ng-hide">
+                                <em class="ng-binding">Includes GST <span ng-show="tax" class="ng-binding">$0.00</span> (<span ng-show="taxRate" class="ng-binding">0%</span>)</em>
+                                <br class="visible-lg" />
+                                <a ng-show="country != 'AU'" href="#" ng-click="showTaxExemptDialog()" class=""><em class="ng-binding">Enter GST ID</em></a>
+                                <a ng-show="country == 'AU'" href="#" ng-click="showTaxExemptDialog()" class="ng-hide"><em class="ng-binding">Enter ABN</em></a>
+                            </div>
+                            <div ng-show="taxType == 'JP' &amp;&amp; totalValue != 0" class="small text-right ng-hide">
+                                <em class="ng-binding">Includes Consumption Tax <span ng-show="tax" class="ng-binding">$0.00</span> (<span ng-show="taxRate" class="ng-binding">0%</span>)</em>
+                                <!-- Commented out until we can limit B2B software to only B2B purchasers.
+                                <br class="visible-lg">
+                                <a class="nowrap" ng-click="showJpConsumptionTaxDialog()" href=""><em>{{'EnterTaxInformationJp' | phrase}}</em></a>
+                                -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ngIf: subscriptionCheckbox.display -->
+            <!-- ngIf: totalSavingsVal > 0 -->
+
+            <!-- show if order is free  -->
+            <div class="well total-well clearfix ng-hide" ng-show="paymentOptionType == 'free'">
+                <table width="100%">
+                    <tbody><tr>
+                        <td class="text-center">
+                            <span ng-show="priceFree(total)" class="text-success total-price ng-binding"> Your order is</span>
+                            <span class="total-price price-color-free">Free</span>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </div>
+            <!-- end show if order is free  -->
+
+            <!-- Coupon if set to show in Payment Block -->
+            <div ng-show="variables.showCouponField == 'paymentBlock'" class="form-group text-center ng-hide">
+                <!-- Sheerid promotions -->
+                <!-- One Option -->
+                <a ng-show="promotionOptions.length == 1" href="" ng-click="openDiscountIframe(promotionOptions[0])" class="ng-binding ng-hide"> Get Student Discount</a>
+                <!-- Many Options -->
+                <span class="dropdown ng-hide" ng-show="promotionOptions.length &gt; 1" dropdown="" on-toggle="toggled(open)">
+                    <a href="" id="dropdownSheerId" dropdown-toggle="" class="ng-binding" aria-haspopup="true" aria-expanded="false"> Get Occupational Discount<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSheerId">
+                        <!-- ngRepeat: option in promotionOptions -->
+                    </ul>
+                </span>
+
+                <!-- Separator -->
+                <span ng-show="(variables.showCouponField == 'true') &amp;&amp; (promotionOptions.length &gt; 0)" class="vertical-separator ng-hide"> | </span>
+
+                <a ng-show="!showCouponInput" href="" ng-click="showCouponInput = true" class="ng-binding ng-hide">Enter Promotional Code</a>
+                <div class="input-group">
+                    <input ng-show="showCouponInput" type="text" ng-model="couponString" class="form-control ng-pristine ng-valid" placeholder="Coupon Code" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default ng-binding" ng-show="showCouponInput" ng-disabled="hasCoupons() == false" ng-click="applyCoupons()" disabled="disabled">Apply</button>
+                    </span>
+                </div>
+            </div>
+
+            <!-- ngIf: complianceData.enabled -->
+
+            <div class="clearfix payment-option-container" ng-hide="paymentOptionType == 'free'">
+                <div ng-show="applePayAllowed &amp;&amp; applePaySupported" class="apple-pay-payment-methods ng-hide">
+                    <apple-pay-button><div class="apple-pay-button apple-pay-button-black" ng-click="doApplePay()"></div></apple-pay-button>
+
+                    <!-- ngIf: !showOtherPaymentMethods -->
+                </div>
+                <div class="other-payment-methods" ng-show="!applePayAllowed || showOtherPaymentMethods">
+                    <!-- ngRepeat: option in paymentOptionList --><label ng-repeat="option in paymentOptionList" class="payment-option-selectable placeOrderBtn ng-scope" ng-class="{selected: $parent.paymentOptionType == option.type &amp;&amp; variables.shortCheckout !== 'true'}">
+                        <input ng-click="doShortCheckout(option)" class="sr-only ng-pristine ng-valid" type="radio" name="payment-option-type" ng-value="option.type" ng-model="$parent.paymentOptionType" "="" value="card" />
+                        <table width="100%">
+                            <tbody><tr>
+                                <td><div class="payment-icon card" ng-class="option.type"></div></td>
+                                <td class="payment-option-display"><span class="ng-binding">Credit / Debit Card</span></td>
+                            </tr>
+                        </tbody></table>
+                    </label><!-- end ngRepeat: option in paymentOptionList --><label ng-repeat="option in paymentOptionList" class="payment-option-selectable placeOrderBtn ng-scope" ng-class="{selected: $parent.paymentOptionType == option.type &amp;&amp; variables.shortCheckout !== 'true'}">
+                        <input ng-click="doShortCheckout(option)" class="sr-only ng-pristine ng-valid" type="radio" name="payment-option-type" ng-value="option.type" ng-model="$parent.paymentOptionType" "="" value="paypal" />
+                        <table width="100%">
+                            <tbody><tr>
+                                <td><div class="payment-icon paypal" ng-class="option.type"></div></td>
+                                <td class="payment-option-display"><span class="ng-binding">PayPal Checkout</span></td>
+                            </tr>
+                        </tbody></table>
+                    </label><!-- end ngRepeat: option in paymentOptionList --><label ng-repeat="option in paymentOptionList" class="payment-option-selectable placeOrderBtn ng-scope" ng-class="{selected: $parent.paymentOptionType == option.type &amp;&amp; variables.shortCheckout !== 'true'}">
+                        <input ng-click="doShortCheckout(option)" class="sr-only ng-pristine ng-valid" type="radio" name="payment-option-type" ng-value="option.type" ng-model="$parent.paymentOptionType" "="" value="amazon" />
+                        <table width="100%">
+                            <tbody><tr>
+                                <td><div class="payment-icon amazon" ng-class="option.type"></div></td>
+                                <td class="payment-option-display"><span class="ng-binding">Pay with Amazon</span></td>
+                            </tr>
+                        </tbody></table>
+                    </label><!-- end ngRepeat: option in paymentOptionList -->
+                </div>
+            </div>
+        </div> <!-- end panel-body -->
+
+        <div ng-hide="(applePayAllowed &amp;&amp; !showOtherPaymentMethods) || variables.shortCheckout === 'true' &amp;&amp; (totalValue != 0 || paymentOptionType != 'free')" class="panel-footer ng-hide">
+            <button type="button" ng-click="choosePaymentOption()" class="btn-block btn placeOrderBtn ng-binding" ng-bind="placeOrderBtnCaption(paymentOptionType)">Enter Payment Details</button>
+        </div>
+    </div> <!-- end panel-payment -->
+
+    <!--
+        Variants accepted
+     -->
+    <div ng-show="paymentOptionType == 'card'" class="text-center">
+        <!-- ngRepeat: option in paymentOptionList | filter:{type:'card'} --><label ng-repeat="option in paymentOptionList | filter:{type:'card'}" class="ng-scope">
+            <!-- ngRepeat: variant in option.variants --><div class="payment-icon small ng-scope visa" ng-repeat="variant in option.variants" ng-class="variant.type"><span class="sr-only ng-binding">Visa</span></div><!-- end ngRepeat: variant in option.variants --><div class="payment-icon small ng-scope mastercard" ng-repeat="variant in option.variants" ng-class="variant.type"><span class="sr-only ng-binding">Mastercard</span></div><!-- end ngRepeat: variant in option.variants --><div class="payment-icon small ng-scope discover" ng-repeat="variant in option.variants" ng-class="variant.type"><span class="sr-only ng-binding">Discover</span></div><!-- end ngRepeat: variant in option.variants --><div class="payment-icon small ng-scope amex" ng-repeat="variant in option.variants" ng-class="variant.type"><span class="sr-only ng-binding">American Express</span></div><!-- end ngRepeat: variant in option.variants --><div class="payment-icon small ng-scope jcb" ng-repeat="variant in option.variants" ng-class="variant.type"><span class="sr-only ng-binding">JCB</span></div><!-- end ngRepeat: variant in option.variants --><div class="payment-icon small ng-scope unionpay" ng-repeat="variant in option.variants" ng-class="variant.type"><span class="sr-only ng-binding">UnionPay</span></div><!-- end ngRepeat: variant in option.variants -->
+        </label><!-- end ngRepeat: option in paymentOptionList | filter:{type:'card'} -->
+    </div>
+
+    <!--
+        Seals
+     -->
+    <!-- ngIf: variables.nortonDisplay == 'medium' -->
+    <!-- ngIf: variables.nortonDisplay == 'large' --><div class="norton-block ng-scope" id="norton-large" ng-if="variables.nortonDisplay == 'large'">
+     <table width="135" border="0" cellpadding="2" cellspacing="0" title="Click to Verify - This site chose Symantec SSL for secure e-commerce and confidential communications."> <tbody><tr> <td width="135" align="center" valign="top"><script type="text/javascript" src="https://seal.websecurity.norton.com/getseal?host_name=fschallenge.test.qa.onfastspring.com&amp;size=S&amp;use_flash=NO&amp;use_transparent=YES&amp;lang=en"></script><img name="seal" src="https://seal.websecurity.norton.com/getseal?at=0&amp;sealid=2&amp;dn=fschallenge.test.qa.onfastspring.com&amp;lang=en&amp;tpt=transparent" oncontextmenu="return false;" border="0" usemap="#sealmap_small" alt="" /> <map name="sealmap_small" id="sealmap_small"><area alt="Click to Verify - This site has chosen an SSL Certificate to improve Web site security" title="" href="javascript:vrsn_splash()" shape="rect" coords="0,0,100,50" tabindex="-1" style="outline:none;" /><area alt="Click to Verify - This site has chosen an SSL Certificate to improve Web site security" title="" href="javascript:vrsn_splash()" shape="rect" coords="0,50,53,72" tabindex="-1" style="outline:none;" /><area alt="" title="" href="javascript:symcBuySSL()" shape="rect" coords="53,50,100,72" style="outline:none;" /></map><br /> <a href="http://www.symantec.com/ssl-certificates" target="_blank">ABOUT SSL CERTIFICATES</a></td> </tr> </tbody></table>
+    </div><!-- end ngIf: variables.nortonDisplay == 'large' -->
+    <!-- ngIf: variables.nortonDisplay == 'small' -->
+
+
+    <!--
+        Cross-sells Position: under payment
+     -->
+    <div class="under-payment">
+        <!-- For top level item in product page -->
+        <!-- ngRepeat: offer in groups[0].items[0].groups |filter:showItem() -->
+        <!-- for top level add group -->
+        <!-- this takes into account the high level groups with type add -->
+        <!-- ngRepeat: offer in groups |filter: {type: 'add'} |filter:showItem() -->
+
+    </div>  <!--end of div under payment -->
+
+    </div>
+
+    </div>
+
+    </div> <!--  /.container -->
+    </div> <!-- /#content -->
+
+    <!--
+        App Mask to prevent input during updates.
+     -->
+    <div id="app-mask"> </div>
+
+
+    </div>
+
+
+    <div class="footer">
+        <div class="container">
+            
+            <div class="ng-binding">
+                We use industry-standard encryption to protect the confidentiality of your personal information.<br />
+                This purchase and product fulfillment are through <a href="http://www.fastspring.com/purchasing-through-fastspring.php?utm_source=Store&amp;utm_medium=Purchasing_Through_FastSpring&amp;utm_content=Foundation&amp;utm_campaign=Store_Traffic" target="_blank">FastSpring</a>, a trusted reseller for this store.
+                <br /><terms-of-service><a ng-href="https://fastspring.com/privacy?utm_source=Store&amp;utm_medium=Privacy_Policy&amp;utm_content=Foundation&amp;utm_campaign=Store_Traffic" target="_blank" rel="noopener noreferrer" class="ng-binding" href="https://fastspring.com/privacy?utm_source=Store&amp;utm_medium=Privacy_Policy&amp;utm_content=Foundation&amp;utm_campaign=Store_Traffic">Privacy Policy</a> | <a ng-href="https://www.fastspring.com/terms-sale-us.html?utm_source=Store&amp;utm_medium=Terms_of_Sale_US&amp;utm_content=Foundation&amp;utm_campaign=Store_Traffic" target="_blank" rel="noopener noreferrer" class="ng-binding" href="https://www.fastspring.com/terms-sale-us.html?utm_source=Store&amp;utm_medium=Terms_of_Sale_US&amp;utm_content=Foundation&amp;utm_campaign=Store_Traffic">Terms of Sale</a></terms-of-service>
+            </div>
+        </div>
+    </div>
+
+</div> <!--body-footer-->
+
+    <!-- script type="text/javascript" src="https://seal.websecurity.norton.com/getseal?host_name=sites.fastspring.com&amp;size=L&amp;use_flash=NO&amp;use_transparent=YES&amp;lang=en">
+    </script-->
+
+<script id="viewdata" type="application/x-view-json">
+{"order":{"currency":"USD","country":"US","taxExemptionAllowed":false,"taxExempt":false,"total":"$0.00","totalValue":0.0,"tax":"$0.00","taxValue":0.0,"totalWithTax":"$0.00","totalWithTaxValue":0.0,"discountTotal":"$0.00","discountTotalValue":0.0,"discountTotalPercentValue":0.0,"taxPriceType":"added","taxType":"US","taxRate":"0%","groups":[{"items":[{"selected":true,"path":"amruta-20181212","pid":"amruta-20181212","quantity":1,"price":"$0.00","priceValue":0.0,"priceTotal":"$0.00","priceTotalValue":0.0,"unitPrice":"$0.00","unitPriceValue":0.0,"unitDiscountValue":0.0,"discountPercentValue":0.0,"discountTotal":"$0.00","discountTotalValue":0.0,"total":"$0.00","totalValue":0.0,"quantityEditable":true,"removable":false,"autoRenew":true,"image":"https://d38v6yr1d77bzy.cloudfront.net/gVJK5OAoRmg/nkcqZCVKQuw/individual-mosaic.jpg","display":"First Attempt","sku":"string","description":{"summary":"&lt;p&gt;String&lt;/p&gt;","full":"&lt;p&gt;String&lt;/p&gt;","action":"String"},"pricing":{"quantity":"allow"},"future":{"begins":"Dec 22, 2018","beginsValue":1545436800000,"intervalUnit":"month","intervalLength":1,"price":"$14.95","priceValue":14.95,"priceTotal":"$14.95","priceTotalValue":14.95,"unitPrice":"$14.95","unitPriceValue":14.95,"unitDiscountValue":0.0,"discountPercentValue":0.0,"discountTotal":"$0.00","discountTotalValue":0.0,"total":"$14.95","totalValue":14.95},"subscription":{"nextChargeDate":"Dec 22, 2018","nextChargeDateValue":1545436800000,"nextChargeTotal":"$14.95","nextChargeTotalValue":14.95,"nextChargeCurrency":"USD","intervalUnit":"month","intervalLength":1,"repeatingInstruction":false,"instructions":[{"periodStartDate":"Dec 20, 2018","periodStartDateValue":1545264000000,"periodEndDate":"Dec 21, 2018","periodEndDateValue":1545350400000,"current":true,"type":"trial","productPath":"amruta-20181212","intervalUnit":"month","intervalLength":1,"price":"$14.95","priceValue":14.95,"priceTotal":"$14.95","priceTotalValue":14.95,"unitPrice":"$0.00","unitPriceValue":0.0,"unitDiscount":"$14.95","unitDiscountValue":14.95,"discountPercent":"100%","discountPercentValue":100.0,"discountTotal":"$14.95","discountTotalValue":14.95,"discountDurationUnit":"day","discountDurationLength":2,"total":"$0.00","totalValue":0.0},{"periodStartDate":"Dec 22, 2018","periodStartDateValue":1545436800000,"current":false,"type":"regular","productPath":"amruta-20181212","intervalUnit":"month","intervalLength":1,"price":"$14.95","priceValue":14.95,"priceTotal":"$14.95","priceTotalValue":14.95,"unitPrice":"$14.95","unitPriceValue":14.95,"unitDiscount":"$0.00","unitDiscountValue":0.0,"discountPercent":"0%","discountPercentValue":0.0,"discountTotal":"$0.00","discountTotalValue":0.0,"total":"$14.95","totalValue":14.95}],"currency":"USD","addons":[],"active":false,"cancelled":false,"completed":false},"groups":[],"productFormat":"digital","product":"amruta-20181212","variation":"amruta-20181212","attributes":{"key2":"value2","key1":"value1"}}],"required":false,"selections":true}],"coupons":[],"payments":[],"gift":false,"fields":[],"selections":true,"creationTime":0},"messages":[],"phrases":{"HideSubscriptionTerms":"Hide subscription terms","ApplyCoupon":"Apply","RenewEvery":"renew every %s %s","AutoRenewCollectedInfomarion":"You payment information was securely stored for automatic renewals","ConfirmUpdatePaymentMethod":"Are you sure you want to change your default payment method?","ServiceTaxID":"Service Tax ID","ShippingPhoneNumber":"Phone Number","Test":"Test","ShippingAddress":"Shipping Address","NextPayment":"Next payment:","CardExpireMonth":"Card Expire Month","FailureAmazonCountryUpdate":"Your Amazon account's country was different.  We've updated your order using the country on your Amazon account.  Please review the total and try again.","BankPaymentWireInstructionIban":"IBAN","PurchaseOrderInstructionDescription":"Please pay your invoice to complete this order","GstDialogTitle":"GST Information","AndEndingOn":"and ending on","JpNationalTaxId":"National Tax ID","RegionEUR":"Europe","ServiceTaxDialogTitle":"Service Tax Information","EnterTaxInformationService":"Enter Service Tax ID","OrderSubtotal":"Subtotal","TermsOfSale":"Terms of Sale","MakeDefault":"Make Default","Country":"Country","OrderSectionTitle":"Your Order","TaxValue":"Tax:","PurchaseOrderInstructionPendingApprovalTitle":"Order Pending Approval","GstAbout":"Prices and order total includes GST.","Email":"Email","AccountManagement":"Account Management","CardNumberPlaceholder":"Card Number","TryAgain":"Try Again","Ending":"Ends on","Failed":"Failed","BankPaymentWireInstructionBankAddress":"Address","PaymentType.amazon":"Pay with Amazon","PaymentDetails":"Payment Details","Complete":"Complete","CancelledAtBank":"Payment cancelled.","Abandonment.CompleteYourOrder":"Complete Your Order","EnterTaxInformationAbn":"Enter ABN","BankPaymentWireInstructionViewNowButton":"View Instructions Now","Details":"Details","before":"before","FieldErrors":"Please correct the highlighted fields.","ViaFastspring":"VIA FASTSPRING","ConfirmCancel":"Cancel","OrderContainsAdhoc":"Payment details will be kept for future orders.","AbnExemptInvalid":"Your company's ABN could not be validated.","MustBeRenewedEvery":"Must be renewed every %s %s","EnterEmail":"Please enter your email address to continue","UpgradeAndContinue":"Upgrade and continue!","Months":"months","MailingListSubscribe":"Get updates about our products and offerings","BillDescriptor":"Charges will appear on your bill as","UseThis":"Use This","ServiceTaxExemptInvalid":"Your company's service tax identification number could not be validated.","Items":"%s items","EnterTaxInformationEU":"Enter VAT ID","EnterPaymentDetails":"Enter Payment Details","FreeTrialUntil":"Free trial until","CustomerReference":"Purchase Order Number (Optional)","EUVatExemptInvalid":"Your company's VAT identification number could not be validated.","PaymentDialogTitle":"Your Payment","ChangePlanAndQuantity":"Change Plan &amp; Quantity","CardCvvInvalid":"Your credit card security code (CVC) is invalid.","AgreementTermsAndPolicy":"&lt;span&gt;I agree with FastSpring &lt;a href ng-href=\"{{complianceData.termsURL}}\" target=\"_blank\" rel=\"noopener noreferrer\"&gt;terms of service&lt;/a&gt; and &lt;a href ng-href=\"{{complianceData.privacyURL}}\" target=\"_blank\" rel=\"noopener noreferrer\"&gt;privacy policy&lt;/a&gt;&lt;/span&gt;","PaymentVariant.mastercard":"Mastercard","EUVatAbout":"Prices and order total includes VAT.","PaymentOption.sofort":"Sofort","PaymentType.card":"Credit / Debit Card","SubscriptionTerms":"Subscription terms","LastPayment":"Last payment","Cancelled":"Cancelled","NoActiveSubscriptions":"No active subscriptions","Month":"month","Calculating":"Calculating","PaymentDialogMessage":"Your payment was successful","AutorenewOffWarning":"If automatic renew is turned off you will be required to enter payment details every time this subscription renews. Turn off automatic renew?","Footer.ThisPurchase":"This purchase and product fulfillment are through","AbnExemptApplied":"Your company's ABN has been applied, and GST charges have been removed.","BankPaymentWireInstructionAccountHolder":"Beneficiary/Account Holder","Add":"Add","ChooseLanguage":"Choose Language","PaymentType.alipay":"Alipay","ChooseCountry":"Choose Country","Current":"Current","GstID":"GST ID","BankPaymentWireInstructionBank":"Bank","PaymentInformationTitle":"Payment Information","BillingAddress":"Billing Address","RegionAM":"Americas","BankPaymentWireInstructionViewButton":"View Instructions","RegionAS":"Asia","ShippingRegion":"State","AbnExemptInfo":"If you are placing an order on behalf of a company in Australia, enter the company's ABN and the GST charges will be removed.","PrivacyPolicy":"Privacy Policy","ForFree":"for free","EndingWith":"Ending with","Starting":"starting","BankPaymentWireInstructionTitle":"Bank Transfer Instructions","PaymentOption.paypal":"PayPal Account","Debit":"Debit","Sheerid-military":"Get Military Discount","SubscriptionCancelFailed":"An unexpected error occurred while cancelling the subscription.","Sheerid-teacher":"Get Teacher Discount","AlipayReminder":"To pay with Alipay, please confirm your payment before closing your browser.","EUVatIDSubmit":"Submit","ServiceTaxExemptApplied":"Your company's service tax identification number has been applied, and service tax charges have been removed.","Store":"Store","WaitRedirectAbout":"We are redirecting your browser, please wait.","Update":"Update","Ended":"Ended","Continue":"Continue","CardInfoBRL":"This purchase is subject to applicable Brazilian laws and rules of an international transaction","PaymentType.free":"FREE","PostOrderExpectationTitle":"Thank you for your order!","SubmitLocale":"Submit","PurchaseOrderInstructionPendingApprovalDescription":"Thank you for placing your order. We will review your order information and email you within 1-2 business days with an invoice.","Includes":"Includes","ShowHistory":"Show billing history","Year":"year","FailureGeneric":"An unexpected error occurred, and we are not currently able to accept payment.","ConfirmCancelSubscription":"Are you sure you want to cancel the subscription?","RegionAF":"Africa","SubscriptionManagement":"Full Terms and Subscription Management","Days":"days","DeleteItem":"Remove","PaymentOption.wire":"Wire Transfer","Company":"Company","ViewDetails":"View Details","EUVatExemptApplied":"Your company's VAT identification number has been applied, and VAT charges have been removed.","UnsupportedInTestMode":"Not supported while in testing mode.","PayNow":"Pay Now","PaymentSectionTitle":"Your Payment","Years":"years","ShippingTitle":"Shipping Address","CardsAccepted":"We accept","Province":"Province","SavingsTitle":"You Save","SubscriptionNotCancelable":"The subscription may not be canceled.","ZipCode":"Zip Code","DownloadNow":"Download Now","PaymentVariant.discover":"Discover","PaymentVariant.amex":"American Express","Forbidden":"Could not validate provided information","BankPaymentWireInstructionDialogTitle":"Bank Transfer Instructions","Refunded":"Refunded","AbnDialogTitle":"ABN Information","CancelSubscription":"Cancel Subscription","FailurePayPalCountryUpdate":"Your PayPal account's country was different.  We've updated your order using the country on your PayPal account.  Please review the total and try again.","CardSecurityCodePlaceholder":"CVC","PaymentPending":"Payment Pending","PaymentType.paypal":"PayPal Checkout","OrderTotal":"Total","FailureRisk":"We regret that your order could not be accepted. We value your business and would like to help you complete this order. Please contact us for assistance.","GstExemptInvalid":"Your company's GST identification number could not be validated.","TaxInformationUS":"+Tax","OrderReference":"Order Reference","LightBox.InYourCart":"In your cart","YourProfile":"Your Profile","CardSecurityCodeHint":"The CVC Number is a 3 digit number on the back of your card.","Save":"Save","VatExemptInfo":"If you are placing an order on behalf of a company in %s, enter the company's VAT identification number and the VAT charges will be removed.","YouSaved":"You saved","TaxInformationService":"Includes Service Tax","MultipleRebills":"Multiple future rebills.","EmailFormInstructions":"Please enter the email address associated with this account","SubscriptionAlreadyPaid":"Subscription has already been paid","MustBePaidManually":"%s must be paid manually before %s","LastName":"Last Name","Free":"Free","ActiveSubscriptions":"Active Subscriptions","Manage":"Manage","OrderInvoice":"Order Invoice","VolumeDiscountsAvailable":"Volume Discounts Available","ShippingCity":"City","on":"on","EnterZipToCalculate":"Enter ZIP","PaymentVariant.unionpay":"UnionPay","RegionOC":"Oceania","AddPaymentMethod":"Add Payment Method","GstExemptInfo":"If you are placing an order on behalf of a company in %s, enter the company's GST identification number and the GST charges will be removed.","PurchaseOrderInstructionPayNowButton":"Pay Now","Default":"Default","BankPaymentWireInstructionAccountNo":"Account No","CardExpireYear":"Card Expire Year","PaymentType.purchaseorder":"Purchase Order/Invoice","NoInactiveSubscriptions":"No inactive subscriptions","FastspringCheckout":"FastSpring Checkout","TaxUS":"Tax","Every":"Every","SubscriptionAddonTerms.Single":"Renews along with subscription","TaxInformationEU":"Includes VAT","SavePaymentDetails":"Save Payment Details","PaymentOption.card":"Credit / Debit Card","RenewsEvery":"Renews every %s %s","Price":"Price","JpConsumptionTaxAbout":"Prices and order total includes Consumption Tax.","PaymentDialogOk":"OK","CardSecurityCode":"Card Security Code","Refunds":"Refunds","ErrorChoosePaymentMethod":"Please choose a payment method.","YourOrders":"Your Orders","EnterTaxInformationGst":"Enter GST ID","MultipleVariations":"Unable to add variation of product already in the session","JpConsumptionTaxExemptApplied":"Your company's National Tax ID has been applied, and the Consumption Tax charges have been removed.","HideSubscriptionAddonTerms":"Hide add-on terms","BillingHistory":"Billing History","PaymentType.sofort":"Sofort","UpdatePaymentMethod":"Update payment method","OrderEmpty":"Your Order Is Empty","ConfirmOk":"Yes","NextCharge":"Next charge:","Close":"Close","BillingPostalCode":"Billing Postal Code","Weeks":"weeks","EmailLinkInstructions":"An email was sent with instructions for accessing your account","FirstName":"First Name","Addons":"Addons","PaymentOption.alipay":"Alipay","PaymentType.giropay":"GiroPay","CardNumber":"Card Number","EUVatExemptInfo":"If you are placing an order on behalf of a company in the EU, enter the company's VAT identification number and the VAT charges will be removed.","Pay":"Pay %s","CardSecurityCodeHintAmex":"The CID is a 4 digit number printed on the front of your card.","ShippingStreet":"Address","Tax":"Tax","Unexpected":"An unexpected error occurred.  Please try again, or refresh the page in your browser.","City":"City","PaymentOption.giropay":"GiroPay","Shipment":"Shipment","Next":"Next","On":"on","ManageYourOrders":"Manage Your Orders","SubscriptionAddonIncluded":"including add-on items","Address":"Address","CouponCall":"Enter Promotional Code","AbnID":"ABN","ErrorServer":"An unexpected error occurred. Please try again later.","DownloadAction":"Download Now","Total":"Total","JpNationalTaxIdSubmit":"Submit","EUVatID":"VAT ID","ConfirmRemovePaymentMethod":"Are you sure you want to remove the payment method?","PaymentType.wire":"Wire Transfer","JpConsumptionTaxExemptInfo":"If you are placing an order on behalf of a company in Japan, enter the company's National Tax ID and the Consumption Tax charges will be removed.","PaymentOption.purchaseorder":"Purchase Order/Invoice","PurchaseOrderInstructionTitle":"Invoice and Payment Instructions","Inactive":"Inactive","BankPaymentWireInstructionSwiftCode":"Swift-Code","Orders":"Orders","BankPaymentWireInstructionPaymentReference":"Payment Reference","ConfirmUpdateSubscriptionPaymentMethod":"Are you sure you want to change the default subscription payment method?","ManageAccount":"Account Management","ChooseLocale":"Choose Country / Language...","ConfirmTitle":"Confirm","PaymentType.ideal":"iDEAL","RenewsAutomatically":"Renews automatically by the seller","EmailFormInvalid":"Please enter a valid email address","OtherPaymentMethods":"Other Payment Methods","WaitRedirectTitle":"Please wait...","PostOrderExpectationDescription":"We are sending a copy of all important order information to your email address.","EnterTaxInformationJp":"Enter National Tax ID","PaymentType.sepa":"Direct Debit","SavePaymentDetailsForRebills":"Securely save payment details for automated subscription renewal","LastCharge":"Last charge","GetInvoice":"Get Invoice","PaymentVariant.jcb":"JCB","ServiceTaxExemptInfo":"If you are placing an order on behalf of a company in %s, enter the company's service tax identification number and the service tax charges will be removed.","SubscriptionAddonTerms":"Add-on terms","Bundle":"Bundle","BankPaymentWireInstructionDescription":"When paying by bank transfer, your product cannot be delivered until payment is received in full. After we receive payment, please allow 3 business days for processing.","Subscriptions":"Subscriptions","OrderOn":"Order on","Abandonment.PurchaseWithDiscount":"Purchase With Discount","Today":"today","Coupon":"Coupon Code","InactiveSubscriptions":"Inactive Subscriptions","CouponCode":"Coupon Code","ShippingPostalCode":"Postal Code","Footer.WeUse":"We use industry-standard encryption to protect the confidentiality of your personal information.","FirstCharge":"First charge:","JpConsumptionTaxtExemptInvalid":"Your company's National Tax ID could not be validated.","PaymentInformation":"Payment Information","BankPaymentWireInstructionDialogIntroduction":"Initiate a Bank Transfer via your own bank to:","Week":"week","CardExpireYearPlaceholder":"YY","Sheerid-professional":"Get Occupational Discount","PaymentOption.sepa":"Direct Debit","Credit":"Credit","PaymentOption.amazon":"Amazon","CouponInvalid":"The promotional code you entered does not exist.","CardDeclined":"Your credit card was declined. Please try another card, or choose a different form of payment.","EUVatDialogTitle":"VAT Information","Day":"day","AccountDetailsPaymentMethods":"Account Details and Payment Methods","BankTransferNote":"When paying by bank transfer, your product cannot be delivered until payment is received in full. After we receive payment, please allow 3 business days for processing. Payment Instructions","ServiceTaxAbout":"Prices and order total includes service tax.","CardExpired":"Your credit card has expired. Please try another card, or choose a different form of payment.","PlaceYourOrder":"Place Your Order","For":"for","Remove":"Remove","CardExpireMonthPlaceholder":"MM","PaymentVariant.visa":"Visa","YourOrderIs":"Your order is","LightBox.UpgradeAvailable":"Upgrade available","PaymentOption.ideal":"iDEAL","TaxInformationGST":"Includes GST","JpConsumptionTaxDialogTitle":"Consumption Tax Information","Quantity":"Quantity","Edit":"Edit","TaxNotApplicable":"Not Applicable","MissingData":"Required information was not provided. Please try again.","Daily":"daily","EditProfile":"Edit Profile","PaymentMethods":"Payment Methods","GstExemptApplied":"Your company's GST identification number has been applied, and GST charges have been removed.","Sheerid-student":"Get Student Discount","Updating":"Updating","TaxInformationJp":"Includes Consumption Tax","InvoiceLinkText":"View Invoice","Footer.TrustedReseller":", a trusted reseller for this store.","Card":"Card"},"locks":[],"paymentOptions":[{"type":"card","variants":[{"type":"visa"},{"type":"mastercard"},{"type":"discover"},{"type":"amex"},{"type":"jcb"},{"type":"unionpay"}],"requireContact":true,"requireBillingPostal":true,"requireCard":true,"requireShipping":false,"requireCustomerReference":false,"currency":"USD","match":true,"visible":true,"supportRecurring":true},{"type":"paypal","variants":[],"requireContact":false,"requireBillingPostal":false,"requireCard":false,"requireShipping":false,"requireCustomerReference":false,"currency":"USD","match":true,"visible":true,"supportRecurring":true},{"type":"amazon","variants":[],"requireContact":false,"requireBillingPostal":false,"requireCard":false,"requireShipping":false,"requireCustomerReference":false,"currency":"USD","match":true,"visible":true,"supportRecurring":true},{"type":"wire","variants":[],"requireContact":true,"requireBillingPostal":true,"requireCard":false,"requireShipping":false,"requireCustomerReference":false,"currency":"USD","match":true,"visible":true,"supportRecurring":false}],"promotionOptions":[],"session":{"location":"https://fschallenge.test.qa.onfastspring.com/session/amruta-20181212","sandbox":"https://d3ws7ds7dkdea.cloudfront.net/fschallenge","token":"new/0N8NPmdqRDCa3SrtH-DP5w","primary":"fschallenge","id":"amruta-20181212","live":false},"variables":{"nortonDisplay":"large","showEmailOnCartPage":"both","listUpSellsPosition":"below","addPaymentMethodBtnFontSize":"12px","panelHeaderColorNew":"#f5f5f5","manageSubscriptionBtnFontSize":"14px","upSellsDisplay":"page","showVatLink":"true","priceSize":"large","showCompanyField":"disable","enableGiftPurchases":"false","popupButtonAlign":"left","addToCartBtnFontSize":"14px","collectingEmailCheckbox":"true","requireEmail":"false","title":"FastSpring Checkout","integrationBehaviourGA":"default","integrationBehaviourGTM":"default","popupHeadingAlign":"left","couponFieldExpanded":"true","managePaymentMethodBtnFontSize":"14px","productTitle":"showDescription","forcePhoneNumberCollection":"true","listUpSellsDisplay":"page","offerTitleSize":"16px","cartUpSellsPosition":"below","upSellsPosition":"below","subscriptionUsePaymentMethodBtnFontSize":"14px","confirmOkBtnFontSize":"14px","hideFree":"false","subscriptionAutoRenew":"auto","countrySelector":"visible","showCouponField":"true","confirmCancelBtnFontSize":"14px","productTitleSize":"18px","font":"Helvetica-Neue","savePaymentDetailsBtnFontSize":"14px","popupTextAlign":"left","forcePhysicalAddressCollection":"true","licenses":"true","productImageSize":"large","cartCrossSellsPositionProduct":"belowdriver","crossSellsPositionStorefront":"below","textAlign":"left","crossSellsPositionProduct":"belowdriver","offerImageSizeOutsideCart":"large","panelHeaderTextColor":"#333333","popupTimeout":"10","offerImageSizeInsideCart":"medium","popupOnWindowClose":"false","shortCheckout":"true","topbarFreezing":"false","listCrossSellsPositionProduct":"belowdriver","showListCheckbox":"false","popupOnTimeout":"false","cartUpSellsDisplay":"page","purchaseBtn":"addToCart"},"country":"US","countryDisplay":"United States","countryRequiresPostalCode":true,"countryRequiresRegion":true,"language":"en","languageDisplay":"English","forceFuture":false,"hasRecurring":true,"autoRenewInit":true,"autoRenewToggle":false,"referer":"","defaultLanguage":true,"validZipCode":false,"live":false,"hasAccount":false,"services":{"applepay.service.endpoint":"https://qa-apis.fastspring.com/applepay","address.service.endpoint":"https://qa-apis.fastspring.com/address"}}
+</script>
+
+    <script type="text/ng-template" id="product-title.html">
+        &lt;span ng-hide="item.description.full" ng-bind-html="item.display"&gt;&lt;/span&gt;
+        &lt;a ng-show="item.description.full" ng-click="showDescription(item)" href="" ng-bind-html="item.display"&gt;&lt;/a&gt;
+        &lt;span class="glyphicon glyphicon-search item-description-tooltip" ng-show="item.description.tooltip" tooltip-placement="bottom" tooltip-html-unsafe="{{ item.description.tooltip }}"&gt;&lt;/span&gt;
+    </script>
+    <!--
+      Item (selected or unselected)
+      note: inherits parent... expects an item variable in scope.
+    -->
+    <!-- used in  data-item-row directive -->
+    <script type="text/ng-template" id="item.html">
+        &lt;tr ng-class="item.styleClass"&gt;
+            &lt;td align="center" class="product-cell"&gt;
+                &lt;div ng-style="imageStyle(item)" ng-show="item.image" ng-class="{'offer-image': isOffer, 'product-image' : !isOffer, 'in-cart': item.selected}"&gt; &lt;/div&gt;
+            &lt;/td&gt;
+            &lt;td class="description-cell"&gt;
+                &lt;div&gt;
+                    &lt;strong class="product-title" product-title item="item" currency="order.currency"&gt;&lt;/strong&gt;
+                    &lt;!-- //Custom badges from attributes --&gt;
+                    &lt;span ng-if ="item.bundle" class="label label-success label-as-badge"&gt; {{'Bundle' | phrase}}&lt;/span&gt;
+                    &lt;span ng-if ="item.attributes.customBadge" ng-style="customColor(item.attributes.customBadgeColor)" class="label label-as-badge custom-badge"&gt; {{item.attributes.customBadge}} &lt;/span&gt;
+
+            &lt;/div&gt;
+
+            &lt;!-- //Renew/renews part --&gt;
+            &lt;div ng-if="item.subscription" renews-checkbox subscription="item.subscription" item="item" language="language"&gt;&lt;/div&gt;
+
+            &lt;!-- //end subscription renews part --&gt;
+
+            &lt;div class="text-muted" ng-show="item.description.summary" ng-bind-html="item.description.summary"&gt;&lt;/div&gt;
+            &lt;div class="small" ng-show="item.terms" ng-bind-html="item.terms"&gt;&lt;/div&gt;
+            &lt;div class="text-info small" ng-show="item.offer"&gt;&lt;span class="glyphicon glyphicon-tag"&gt;&lt;/span&gt; &lt;span ng-bind-html="item.offer"&gt;&lt;/span&gt;&lt;/div&gt;
+            &lt;!-- //this should be inside only --&gt;
+
+            &lt;!--// the following used for bundles only--&gt;
+            &lt;div class="well well-sm inline-block" ng-repeat="ordergroup in item.groups" ng-show="ordergroup.type == 'bundle'"&gt;
+                &lt;div class="inline-block bundle-item" ng-repeat="item in ordergroup.items"&gt;
+                    &lt;div ng-show="item.image" class="bundle-image" ng-style="imageStyle(item)" tooltip="{{item.display}}" tooltip-placement="bottom" tooltip-trigger &gt; &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;!--// end of bundles only template--&gt;
+
+
+        &lt;/td&gt;
+
+        &lt;td class="last-price-row hidden-xs"&gt;
+            &lt;div ng-if="!item.autoRenew || item.subscription.intervalUnit=='adhoc'" ng-include="'price-row.html'"&gt; &lt;/div&gt;
+            &lt;div ng-if="item.autoRenew &amp;&amp; !(item.subscription.intervalUnit=='adhoc')" ng-include="'subscriptions-price-row.html'"&gt; &lt;/div&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+</script>
+
+
+<script type="text/ng-template" id="renews-checkbox.html">
+    &lt;!-- //Renews every [period length] starting today and ending on [end date] --&gt;
+    &lt;div ng-hide="subscriptionType.adhoc" class="bordered-muted inline-block renews-block text-muted"&gt;
+
+        &lt;span ng-if="!subscription.unequalIntervals"&gt;
+            &lt;span ng-if="item.autoRenew &amp;&amp; language.language == 'de'"&gt; {{'RenewsEvery' | phrase:subscription.germanJede:subscription.intervalLengthAdjusted:subscription.intervalUnitPluralized}} &lt;/span&gt;
+            &lt;span ng-if="item.autoRenew &amp;&amp; language.language != 'de'"&gt; {{'RenewsEvery' | phrase:subscription.intervalLengthAdjusted:subscription.intervalUnitPluralized}} &lt;/span&gt;
+
+            &lt;!-- //Free: Renews every {x} for free --&gt;
+            &lt;span ng-if="subscriptionType.free"&gt; {{'ForFree' | phrase}}&lt;/span&gt;
+
+            &lt;!-- //not free: Renews every {x}. First/next charge: {y} on {z} --&gt;
+            &lt;span ng-if="!subscriptionType.free"&gt;
+                &lt;span class="comma"&gt;&amp;#46;&lt;/span&gt;
+                &lt;span ng-if="subscriptionType.hasTrial &amp;&amp; subscription.nextChargeTotal"&gt; {{'FirstCharge' | phrase}} {{subscription.nextChargeTotal}}&lt;/span&gt;
+                &lt;span ng-if="!subscriptionType.hasTrial &amp;&amp; subscription.nextChargeTotal"&gt; {{'NextCharge' | phrase}} {{subscription.nextChargeTotal}}&lt;/span&gt;
+                &lt;span ng-if="addonSelected(item)"&gt; {{'SubscriptionAddonIncluded' | phrase}} &lt;/span&gt;
+                &lt;span ng-if="subscription.nextChargeDateValue"&gt; {{'on' | phrase}} {{ isToday(subscription.nextChargeDateValue, subscription.nextChargeDate) }}&lt;/span&gt;
+            &lt;/span&gt;
+
+            &lt;!-- //Finite: Ends on {x} --&gt;
+            &lt;span ng-if="subscriptionType.finiteEndDate"&gt;
+                &lt;span class="comma"&gt;&amp;#46;&lt;/span&gt;
+                {{'Ending' | phrase}}
+                {{ subscriptionType.finiteEndDate }}
+            &lt;/span&gt;
+        &lt;/span&gt;
+        &lt;span ng-if="item.autoRenew &amp;&amp; subscription.unequalIntervals"&gt;
+            &lt;span&gt; {{ 'MultipleRebills' | phrase }} &lt;/span&gt; &lt;a href="" ng-click="subscription.showSubscriptionTerms = !subscription.showSubscriptionTerms"&gt; {{ 'Details' | phrase }} &lt;/a&gt;
+        &lt;/span&gt;
+    &lt;/div&gt;
+
+    &lt;!-- //Adhoc --&gt;
+    &lt;div ng-show="subscriptionType.adhoc" class="bordered-muted inline-block renews-block text-muted"&gt;
+        &lt;span&gt; {{'RenewsAutomatically'| phrase}} &lt;/span&gt;
+    &lt;/div&gt;
+
+</script>
+
+<script type="text/ng-template" id="quantity.html">
+    &lt;!-- //Allow- Quantity Editable (+ optional delete via 0) --&gt;
+    &lt;div ng-show="item.selected &amp;&amp; item.pricing.quantity == 'allow'" class="price-item"&gt;
+        &lt;select ng-hide="useQuantityInput(item)" class="item-quantity-input form-control input-sm inline-block"
+            ng-model="item.stagedQuantity" ng-change="changeQuantity(item, false)"&gt;
+            &lt;option ng-if="item.removable" value="0"&gt;0&lt;/option&gt;
+            &lt;option ng-if="item.maxquantity &gt; 0" value="1"&gt;1&lt;/option&gt;
+            &lt;option ng-if="item.maxquantity &gt; 1" value="2"&gt;2&lt;/option&gt;
+            &lt;option ng-if="item.maxquantity &gt; 2" value="3"&gt;3&lt;/option&gt;
+            &lt;option ng-if="item.maxquantity &gt; 3" value="4"&gt;4&lt;/option&gt;
+            &lt;option ng-if="item.maxquantity &gt; 4" value="5"&gt;5&lt;/option&gt;
+            &lt;option ng-if="item.maxquantity &gt; 5" value="6"&gt;6&lt;/option&gt;
+            &lt;option ng-if="item.maxquantity &gt; 6" value="7"&gt;7&lt;/option&gt;
+            &lt;option ng-if="item.maxquantity &gt; 7" value="8"&gt;8&lt;/option&gt;
+            &lt;option ng-if="item.maxquantity &gt; 8" value="9"&gt;9&lt;/option&gt;
+            &lt;option ng-if="item.maxquantity &gt; 9" value="10"&gt;10+&lt;/option&gt;
+
+        &lt;/select&gt;
+
+        &lt;div ng-show="useQuantityInput(item)" class="price-item"&gt;
+            &lt;div&gt;&lt;input type="tel" class="item-quantity-input form-control input-sm" ng-model="item.stagedQuantity"/&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;a href="" class="small text-muted" ng-click="changeQuantity(item, true)"&gt;{{'Update' | phrase}}&lt;/a&gt;&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- //Lock - Quantity Not Editable + NOT Removable , and quantity &gt; 0 --&gt;
+    &lt;div ng-show="item.pricing.quantity == 'lock' &amp;&amp; item.quantity &gt; 0" class="price-item"&gt;
+        &lt;span class="badge"&gt; {{'For' | phrase}} {{ item.quantity }}&lt;/span&gt;
+    &lt;/div&gt;
+
+    &lt;!-- //Remove button - Quantity Not Editable + Removable --&gt;
+    &lt;div ng-show="item.selected &amp;&amp; item.removable &amp;&amp; removeButtonVisibility != 'hidden'" class="price-item"&gt;
+        &lt;a class="dotted text-muted small" ng-click="deleteItem(item)"&gt; {{'DeleteItem' | phrase}} &lt;/a&gt;
+    &lt;/div&gt;
+</script>
+
+<script type="text/ng-template" id="volume-pricing.html">
+    &lt;small class="price-item nowrap-text small dotted text-muted" tooltip-placement="bottom" tooltip-trigger
+        va-tooltip="'tooltipVolumeTpl.html'" &gt; {{'VolumeDiscountsAvailable' | phrase}} &lt;/small&gt;
+</script>
+
+<script type="text/ng-template" id="addon-price-row.html">
+    &lt;!-- //Iterate instrunctions --&gt;
+    &lt;div class="future-row" ng-repeat="instruction in item.subscription.instructions" ng-if="$index == 0 || item.subscription.showSubscriptionTerms"&gt;
+        &lt;div ng-if="instruction.type != 'trial'" ng-include="'subscription.html'"&gt;&lt;/div&gt;
+        &lt;div ng-if="instruction.type == 'trial'" ng-include="'subscription-trial.html'"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;a class="price-item" ng-show="!item.subscription.showSubscriptionTerms" ng-click="item.subscription.showSubscriptionTerms = !item.subscription.showSubscriptionTerms"&gt; {{'SubscriptionAddonTerms' | phrase}} &lt;/a&gt;
+    &lt;a class="price-item" ng-show="item.subscription.showSubscriptionTerms" ng-click="item.subscription.showSubscriptionTerms = !item.subscription.showSubscriptionTerms"&gt; {{'HideSubscriptionAddonTerms' | phrase}} &lt;/a&gt;
+</script>
+
+<script type="text/ng-template" id="subscriptions-price-row.html">
+    &lt;!-- //Iterate instrunctions --&gt;
+    &lt;div class="future-row" ng-repeat="instruction in item.subscription.instructions" ng-if="$index == 0 || item.subscription.showSubscriptionTerms"&gt;
+        &lt;div ng-if="instruction.type != 'trial'" ng-include="'subscription.html'"&gt;&lt;/div&gt;
+        &lt;div ng-if="instruction.type == 'trial'" ng-include="'subscription-trial.html'"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;a class="price-item" ng-show="!item.subscription.showSubscriptionTerms" ng-click="item.subscription.showSubscriptionTerms = !item.subscription.showSubscriptionTerms"&gt; {{'SubscriptionTerms' | phrase}} &lt;/a&gt;
+    &lt;a class="price-item" ng-show="item.subscription.showSubscriptionTerms" ng-click="item.subscription.showSubscriptionTerms = !item.subscription.showSubscriptionTerms"&gt; {{'HideSubscriptionTerms' | phrase}} &lt;/a&gt;
+
+    &lt;div ng-show="!item.selected &amp;&amp; !showTerms" class="list-add-product-btn"&gt;
+        &lt;button class="btn btn-sm addToCartBtn" ng-if="variables.purchaseBtn == 'addToCart' || variables.purchaseBtn == 'openProduct'"
+                ng-hide="item.selected || (variables.purchaseBtn == 'hide')"
+                ng-click="changeQuantity(item, true)"&gt;
+            &lt;span ng-show="item.description.action" ng-bind-html="item.description.action"&gt;&lt;/span&gt;
+            &lt;span ng-hide="item.description.action"&gt; {{'Add' | phrase}} &lt;/span&gt;
+        &lt;/button&gt;
+    &lt;/div&gt;
+</script>
+
+<script type="text/ng-template" id="subscription.html">
+    &lt;div ng-if="$index == 0" ng-include="'price-row-first.html'"&gt;&lt;/div&gt;
+    &lt;div ng-if="$index != 0 &amp;&amp; item.subscription.showSubscriptionTerms" ng-include="'price-row-second.html'"&gt;&lt;/div&gt;
+
+    &lt;!-- //You save text (Subscription discount) --&gt;
+    &lt;div ng-show="item.selected &amp;&amp; instruction.discountTotalValue != 0" class=" inline-block nowrap-text price-item text-success small"&gt;
+        &lt;span&gt;{{'SavingsTitle' | phrase}}
+            {{instruction.discountTotal}} ({{instruction.discountPercent}})
+        &lt;/span&gt;
+    &lt;/div&gt;
+
+    &lt;div ng-if="item.subscription.showSubscriptionTerms"&gt;
+        &lt;!-- //subscription renews part --&gt;
+        &lt;div class="text-muted price-item small" ng-include="'renews-every.html'"&gt; &lt;/div&gt;
+
+        &lt;!--//Coupon discount reason text  --&gt;
+        &lt;div class="text-muted" ng-show="item.discount.reason &amp;&amp; instruction.discountTotalValue &gt; 0"&gt;
+            &lt;p class=" price-item small text-muted"&gt; {{item.discount.reason}} &lt;/p&gt;
+        &lt;/div&gt;
+
+        &lt;!--//Volume pricing --&gt;
+        &lt;div ng-show="item.selected &amp;&amp; item.discount.data.tiers.length&gt;0" ng-include="'volume-pricing.html'"&gt; &lt;/div&gt;
+    &lt;/div&gt;
+</script>
+
+<script type="text/ng-template" id="subscription-trial.html">
+    &lt;div ng-include="'price-row-first.html'"&gt;&lt;/div&gt;
+
+    &lt;div ng-if="item.subscription.showSubscriptionTerms"&gt;
+        &lt;!-- //Free trial-&gt; If instruction.periodStartDateValue value exist --&gt;
+        &lt;div class="text-muted price-item small" ng-show="instruction.periodEndDate"&gt;
+            &lt;span&gt; {{'FreeTrialUntil' | phrase}} &lt;/span&gt;
+            &lt;span ng-bind-html="isToday(instruction.periodEndDateValue, instruction.periodEndDate)"&gt; &lt;/span&gt;
+        &lt;/div&gt;
+
+        &lt;!--//Volume pricing --&gt;
+        &lt;div ng-show="item.selected &amp;&amp; item.discount.data.tiers.length&gt;0" ng-include="'volume-pricing.html'"&gt; &lt;/div&gt;
+    &lt;/div&gt;
+</script>
+
+<script type="text/ng-template" id="renews-every.html">
+    &lt;span ng-if="language.language === 'de'"&gt; {{germanJede}} &lt;/span&gt;
+    &lt;span ng-if="language.language !== 'de'"&gt; {{'Every' | phrase}} &lt;/span&gt;
+    &lt;span ng-show="instruction.intervalLength &gt; 1"&gt; {{instruction.intervalLength}} &lt;/span&gt;
+    &lt;span ng-bind-html="pluralize(instruction.intervalLength, instruction.intervalUnit)"&gt; &lt;/span&gt;
+
+    &lt;!--//starting periodStartDate --&gt;
+    &lt;span ng-hide="instruction.discountDurationLength || (instruction.periodEndDate &amp;&amp; !$last)"&gt; {{'Starting' | phrase}} &lt;/span&gt;
+    &lt;span ng-hide="instruction.discountDurationLength || (instruction.periodEndDate &amp;&amp; !$last)" ng-if="instruction.periodStartDate" ng-bind-html="isToday(instruction.periodStartDateValue, instruction.periodStartDate)"&gt;  &lt;/span&gt;
+    &lt;!-- //Finite subscription only - if instructions last has periodEndDate --&gt;
+    &lt;span ng-if="$last &amp;&amp; instruction.periodEndDate"&gt; {{'AndEndingOn' | phrase}} {{ instruction.periodEndDate }}&lt;/span&gt;
+
+
+    &lt;!-- //, periodStartDate - PeriodEndDate --&gt;
+    &lt;span ng-if="instruction.discountDurationLength || (instruction.periodEndDate &amp;&amp; !$last)" class="comma"&gt;, &lt;/span&gt;
+    &lt;span ng-if="(instruction.discountDurationLength &amp;&amp; instruction.periodStartDate) || (instruction.periodEndDate &amp;&amp; !$last)" ng-bind-html="isToday(instruction.periodStartDateValue, instruction.periodStartDate)"&gt;  &lt;/span&gt;
+    &lt;span ng-show="instruction.discountDurationLength || (instruction.periodEndDate &amp;&amp; !$last)"&gt; - &lt;/span&gt;
+    &lt;span ng-show="instruction.discountDurationLength || (instruction.periodEndDate &amp;&amp; !$last)" ng-bind-html="isToday(instruction.periodEndDateValue, instruction.periodEndDate)"&gt; &lt;/span&gt;
+
+</script>
+
+
+<script type="text/ng-template" id="price-row-first.html">
+    &lt;!--//old price--&gt;
+    &lt;small  class="price-item text-muted" ng-if="instruction.discountPercentValue &gt; 0 &amp;&amp; instruction.type != 'trial'"&gt;&lt;del&gt; {{ instruction.priceTotal }}&lt;/del&gt;
+    &lt;/small&gt;
+
+    &lt;div class="price-row"&gt;
+        &lt;!--//price--&gt;
+        &lt;strong ng-if="item.pricing.quantity == 'allow'" ng-hide="showTerms &amp;&amp; instruction.totalValue === 0 &amp;&amp; instruction.discountTotalValue === 0 &amp;&amp; variables.hideFree === 'true'" class="price-item price {{instruction.unitPrice |priceColor}}"&gt;{{ instruction.unitPrice }}&lt;/strong&gt;
+            &lt;!--//Total price for all items if quantity locked or hidden--&gt;
+        &lt;strong ng-if="!(item.pricing.quantity == 'allow')" ng-hide="showTerms &amp;&amp; instruction.totalValue === 0 &amp;&amp; instruction.discountTotalValue === 0 &amp;&amp; variables.hideFree === 'true'" class="price-item price {{instruction.total |priceColor}}"&gt;{{ instruction.total }}&lt;/strong&gt;
+
+        &lt;div ng-include="'quantity.html'"&gt;&lt;/div&gt;
+    &lt;/div&gt; &lt;!--//end of price-row-div--&gt;
+</script>
+
+
+<script type="text/ng-template" id="price-row-second.html">
+    &lt;div class="price-row no-margin"&gt;
+        &lt;strong class="price-item price {{instruction.total |priceColor}}"&gt;{{ instruction.total }}&lt;/strong&gt;
+        &lt;!--//old price--&gt;
+        &lt;small class="price-item text-muted" ng-if="instruction.discountPercentValue &gt; 0"&gt;&lt;del&gt; {{instruction.priceTotal }}&lt;/del&gt;
+        &lt;/small&gt;
+    &lt;/div&gt;
+</script>
+
+
+
+<script type="text/ng-template" id="choose-one-many.html">
+    &lt;tbody&gt;
+    &lt;tr&gt;
+        &lt;td class="product-cell"&gt;&lt;/td&gt;
+        &lt;td class="description-cell"&gt;
+            &lt;strong class="product-title" ng-bind-html="ordergroup.display"&gt; &lt;/strong&gt;
+        &lt;/td&gt;
+        &lt;td class="last-price-row"&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr ng-repeat="item in items" class="config-terms"&gt;
+        &lt;td class="product-cell"&gt;&lt;/td&gt;
+        &lt;td class="description-cell {{$index &gt; 0 ? 'onepxtop fivepxbottom' : 'fivepxbottom'}}"&gt;
+            &lt;form class="config-choose" ng-class="{'hideFree': !item.image &amp;&amp; showTerms &amp;&amp; variables.hideFree === 'true'}"&gt;
+
+                &lt;label class="{{type}} choose" ng-class="{ 'config-contains-terms' : item.subscription &amp;&amp; showTerms }"&gt;
+                    &lt;input ng-if="type=='radio' || type=='options'" type="radio" ng-model="item.replaceSelection" name="{{items[0].path}}" ng-value="item.path" ng-change="acceptOffer(item, item.type)" /&gt;
+                    &lt;input ng-if="type=='checkbox'" type="checkbox" ng-model="item.selected" name="{{items[0].path}}" ng-value="item.path" ng-change="onCheckbox(item, item.type, item.selected)" /&gt;
+                        &lt;div ng-show="item.image" class="bundle-image inline-block price-item" ng-style="imageStyle(item)"&gt; &lt;/div&gt;
+                        &lt;span  ng-bind-html="item.display"&gt;&lt;/span&gt;
+                &lt;/label&gt;
+            &lt;/form&gt;
+
+            &lt;span ng-if="ordergroup.type=='addon-many' || ordergroup.type=='addon-one'" class="bordered-muted inline-block renews-block text-muted"&gt;
+                {{'SubscriptionAddonTerms.Single' | phrase}}
+            &lt;/span&gt;
+            &lt;div ng-if="item.subscription &amp;&amp; showTerms" renews-checkbox subscription="item.subscription" item="item" language="language"&gt;&lt;/div&gt;
+        &lt;/td&gt;
+
+        &lt;td valign="middle" class="last-price-row {{$index &gt; 0 ? 'onepxtop fivepxbottom' : 'fivepxbottom'}}"
+            ng-if="ordergroup.type=='addon-many' || ordergroup.type=='addon-one' || showTerms"&gt;
+            &lt;div ng-include="'addon-price-row.html'" ng-if="!showTerms"&gt;&lt;/div&gt;
+            &lt;div ng-if="showTerms"&gt;
+                &lt;div ng-include="'subscriptions-price-row.html'" ng-if="item.autoRenew &amp;&amp; item.subscription.intervalUnit!='adhoc'"&gt;&lt;/div&gt;
+                &lt;div ng-include="'price-row.html'" ng-if="!item.autoRenew || item.subscription.intervalUnit=='adhoc'"&gt;&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;&lt;td colspan="3"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;
+</script>
+
+<!--
+    Locale
+ -->
+<script type="text/ng-template" id="localeDialog.html">
+&lt;form name="form" novalidate="novalidate"&gt;
+
+&lt;div class="modal-header"&gt;
+&lt;button type="button" class="close" ng-click="cancel()" aria-hidden="true"&gt;&amp;#215;&lt;/button&gt;
+&lt;h4 class="modal-title"&gt;&lt;span class="glyphicon glyphicon-globe"&gt;&lt;/span&gt; {{'ChooseLocale' | phrase}}&lt;/h4&gt;
+&lt;/div&gt;
+
+&lt;div class="modal-body"&gt;
+&lt;span class="app-update-indicator"&gt;
+&lt;span class="glyphicon glyphicon-refresh"&gt;&lt;/span&gt;
+&lt;span class="sr-only" ng-if="waitAboutPhrase"&gt;{{ waitAboutPhrase | phrase}}&lt;/span&gt;
+&lt;/span&gt;
+
+&lt;div ng-show="loaded"&gt;
+&lt;tabset justified="true"&gt;
+
+&lt;tab&gt;
+    &lt;tab-heading&gt;{{'ChooseCountry'| phrase}}&lt;/tab-heading&gt;
+    &lt;p&gt;&amp;nbsp;&lt;/p&gt;
+    &lt;div class="row"&gt;
+    &lt;div class="col-sm-5"&gt;
+        &lt;div class="list-group"&gt;
+            &lt;a href="" class="list-group-item"
+                ng-class="{'active': selectedRegion.name == region.name}"
+                ng-click="chooseRegion(region)"
+                ng-repeat="region in regions | orderBy:'display'"&gt;{{region.display}}&lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="col-sm-7"&gt;
+        &lt;div class="row small"&gt;
+            &lt;div class="col-sm-6" ng-repeat="country in selectedRegion.countries | filter: {top:true}"&gt;
+                &lt;a href="" ng-click="choose(country.code)"&gt;{{ country.display }}&lt;/a&gt;
+                &lt;span class="glyphicon glyphicon-ok" ng-show="country.code == currentCountry"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/tab&gt;
+
+&lt;tab&gt;
+    &lt;tab-heading&gt;{{'ChooseLanguage'| phrase}}&lt;/tab-heading&gt;
+    &lt;p&gt;&amp;nbsp;&lt;/p&gt;
+    &lt;div class="row"&gt;
+    &lt;div class="language col-sm-6 col-md-4" ng-repeat="language in languages"&gt;
+        &lt;a class="btn btn-primary btn-block" href="" ng-click="choose(null, language.code)"&gt;{{ language.display }}&lt;/a&gt;
+    &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/tab&gt;
+&lt;/tabset&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/form&gt;
+</script>
+
+<!--
+    VAT Dialog
+ -->
+<script type="text/ng-template" id="taxExemptDialog.html">
+    &lt;div class="modal-header"&gt;
+        &lt;button type="button" class="close" ng-click="cancel()" aria-hidden="true"&gt;&amp;#215;&lt;/button&gt;
+        &lt;h4 class="modal-title" ng-if="taxType == 'VAT'"&gt;{{'EUVatDialogTitle' | phrase}}&lt;/h4&gt;
+        &lt;h4 class="modal-title" ng-if="taxType == 'SERVICE'"&gt;{{'ServiceTaxDialogTitle' | phrase}}&lt;/h4&gt;
+        &lt;h4 class="modal-title" ng-if="taxType == 'GST'"&gt;
+            &lt;span ng-show="country == 'AU'"&gt;{{'AbnDialogTitle' | phrase}}&lt;/span&gt;
+            &lt;span ng-show="country != 'AU'"&gt;{{'GstDialogTitle' | phrase}}&lt;/span&gt;
+        &lt;/h4&gt;
+    &lt;/div&gt;
+
+    &lt;div class="modal-body"&gt;
+
+        &lt;p class="alert alert-info" ng-if="taxType == 'VAT'"&gt;
+            {{'EUVatAbout' | phrase}}
+        &lt;/p&gt;
+        &lt;p class="alert alert-info" ng-if="taxType == 'SERVICE'"&gt;
+            {{'ServiceTaxAbout' | phrase}}
+        &lt;/p&gt;
+        &lt;p class="alert alert-info" ng-if="taxType == 'GST'"&gt;
+            {{'GstAbout' | phrase}}
+        &lt;/p&gt;
+
+        &lt;p class="small text-muted" ng-if="taxType == 'VAT' &amp;&amp; fields.vatCountryList.indexOf(country) &lt; 0"&gt;
+            {{'EUVatExemptInfo' | phrase}}
+        &lt;/p&gt;
+        &lt;p class="small text-muted" ng-if="taxType == 'VAT' &amp;&amp; fields.vatCountryList.indexOf(country) &gt; -1"&gt;
+            {{'VatExemptInfo' | phrase:countryDisplay}}
+        &lt;/p&gt;
+        &lt;p class="small text-muted" ng-if="taxType == 'SERVICE'"&gt;
+            {{'ServiceTaxExemptInfo' | phrase:countryDisplay}}
+        &lt;/p&gt;
+        &lt;p class="small text-muted" ng-if="taxType == 'GST'"&gt;
+            &lt;span ng-show="country != 'AU'"&gt;{{'GstExemptInfo' | phrase:countryDisplay}}&lt;/span&gt;
+            &lt;span ng-show="country == 'AU'"&gt;{{'AbnExemptInfo' | phrase}}&lt;/span&gt;
+        &lt;/p&gt;
+
+        &lt;form name="form" class="form-inline" novalidate="novalidate" ng-submit="submitTaxId()"&gt;
+            &lt;div class="form-group" ng-if="taxType == 'VAT'"&gt;
+                &lt;label class="sr-only" for="eu-vat-tax-exempt-id"&gt;{{ 'EUVatID' | phrase }}&lt;/label&gt;
+                &lt;input required="true" type="text" name="taxExemptId"
+                       ng-model="fields.taxExemptId" class="form-control" id="eu-vat-tax-exempt-id"
+                       placeholder="{{ 'EUVatID' | phrase }}"/&gt;
+            &lt;/div&gt;
+            &lt;div class="form-group" ng-if="taxType == 'SERVICE'"&gt;
+                &lt;label class="sr-only" for="service-tax-exempt-id"&gt;{{ 'ServiceTaxID' | phrase }}&lt;/label&gt;
+                &lt;input required="true" type="text" name="taxExemptId"
+                       ng-model="fields.taxExemptId" class="form-control" id="service-tax-exempt-id"
+                       placeholder="{{ 'ServiceTaxID' | phrase }}"/&gt;
+            &lt;/div&gt;
+            &lt;div class="form-group" ng-if="taxType == 'GST'"&gt;
+                &lt;span ng-show="country != 'AU'"&gt;
+                    &lt;label class="sr-only" for="gst-tax-exempt-id"&gt;{{ 'GstID' | phrase }}&lt;/label&gt;
+                    &lt;input required="true" type="text" name="taxExemptId"
+                           ng-model="fields.taxExemptId" class="form-control" id="gst-tax-exempt-id"
+                           placeholder="{{ 'GstID' | phrase }}"/&gt;
+                &lt;/span&gt;
+                &lt;span ng-show="country == 'AU'"&gt;
+                    &lt;label class="sr-only" for="gst-tax-exempt-id"&gt;{{ 'AbnID' | phrase }}&lt;/label&gt;
+                    &lt;input required="true" type="text" name="taxExemptId"
+                           ng-model="fields.taxExemptId" class="form-control" id="abn-tax-exempt-id"
+                           placeholder="{{ 'AbnID' | phrase }}"/&gt;
+                &lt;/span&gt;
+            &lt;/div&gt;
+            &lt;button type="submit" class="btn btn-default btn-sm"&gt;{{'EUVatIDSubmit'| phrase}}&lt;/button&gt;
+        &lt;/form&gt;
+
+    &lt;/div&gt;
+</script>
+
+<!--
+	Japanese Consumption Tax Dialog
+	Note: commented out until we can limit B2B software to only B2B purchasers.
+-->
+<!--
+<script type="text/ng-template" id="jpConsumptionTaxDialog.html">
+	<div class="modal-header">
+	<button type="button" class="close" ng-click="cancel()" aria-hidden="true">&#215;</button>
+	<h4 class="modal-title">{{'JpConsumptionTaxDialogTitle' | phrase}}</h4>
+	</div>
+
+	<div class="modal-body">
+
+	<p class="alert alert-info">
+	{{'JpConsumptionTaxAbout' | phrase}}
+	</p>
+
+	<p class="small text-muted">
+	{{'JpConsumptionTaxExemptInfo' | phrase}}
+	</p>
+
+	<form name="form" class="form-inline" novalidate="novalidate" ng-submit="submitJpNationalTaxId()">
+		<div class="form-group">
+			<label class="sr-only" for="tax-exempt-id">{{'JpNationalTaxId' | phrase}}</label>
+			<input required="true" type="text" name="taxExemptId"
+				ng-model="fields.taxExemptId" class="form-control" id="tax-exempt-id"
+				placeholder="{{'JpNationalTaxId' | phrase}}"/>
+		</div>
+		<button type="submit" class="btn btn-default btn-sm">{{'JpNationalTaxIdSubmit'| phrase}}</button>
+	</form>
+
+	</div>
+</script>
+-->
+
+<!--
+    Description Dialog
+ -->
+<script type="text/ng-template" id="descriptionDialog.html">
+&lt;div class="modal-header"&gt;
+&lt;button type="button" class="close" ng-click="cancel()" aria-hidden="true"&gt;&amp;#215;&lt;/button&gt;
+&lt;h4 class="modal-title"&gt;&lt;span ng-bind-html="title"&gt;&lt;/span&gt;&lt;/h4&gt;
+&lt;/div&gt;
+
+&lt;div class="modal-body clearfix"&gt;
+&lt;img ng-show="image" class="pull-left description-image" ng-src="{{image}}" class="img-responsive"&gt; &lt;/img&gt;
+&lt;div ng-bind-html="description.full"&gt;&lt;/div&gt;
+&lt;/div&gt;
+</script>
+
+<script type="text/ng-template" id="alipayDialog.html">
+    &lt;div class="modal-header"&gt;
+        &lt;button type="button" class="close" ng-click="cancel()" aria-hidden="true"&gt;&amp;#215;&lt;/button&gt;
+        &lt;h4 class="modal-title"&gt;{{'PaymentInformation'| phrase}}&lt;/h4&gt;
+    &lt;/div&gt;
+    &lt;div class="modal-body relative"&gt;
+        &lt;alert type="warning"&gt;
+            {{'AlipayReminder' | phrase}}
+        &lt;/alert&gt;
+        &lt;span class="sr-only"&gt;{{'AlipayReminder' | phrase}}&lt;/span&gt;
+        &lt;div class="pull-right"&gt;
+            &lt;button ng-hide="processing" type="submit" class="btn placeOrderBtn pay-button" ng-click="accept();"&gt;{{'Pay' | phrase:totalWithTax }}&lt;span class="glyphicon glyphicon-chevron-right"&gt;&lt;/span&gt;&lt;/button&gt;
+            &lt;div ng-show="processing"&gt;&lt;span class="glyphicon glyphicon-refresh spin pay-spinner-right"&gt;&lt;/span&gt;&lt;span class="sr-only"&gt;{{'WaitRedirectTitle' | phrase}}&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;p&gt;
+            &amp;nbsp;
+        &lt;/p&gt;
+    &lt;/div&gt;
+</script>
+
+<!--
+    Generic "wait" / progress dialog
+ -->
+<script type="text/ng-template" id="waitDialog.html">
+    &lt;div class="modal-header"&gt;
+        &lt;h4 class="modal-title"&gt;{{ waitTitlePhrase | phrase}}&lt;/h4&gt;
+    &lt;/div&gt;
+    &lt;div class="modal-body relative"&gt;
+        &lt;span class="app-update-indicator"&gt;
+            &lt;span class="glyphicon glyphicon-refresh"&gt;&lt;/span&gt;
+            &lt;span class="sr-only" ng-if="waitAboutPhrase"&gt;{{ waitAboutPhrase | phrase}}&lt;/span&gt;
+        &lt;/span&gt;
+        &lt;p&gt;
+            &amp;nbsp;
+        &lt;/p&gt;
+    &lt;/div&gt;
+</script>
+
+<!--
+  Address (US)
+-->
+<script type="text/ng-template" id="address_US.html">
+    &lt;div&gt;
+        &lt;div class="form-group" ng-class="validationClass(form['contact.addressline1'])"&gt;
+            &lt;label class="sr-only" for="contact-addressline1"&gt;{{'ShippingStreet' | phrase}}&lt;/label&gt;
+            &lt;span class="placeholder"&gt;{{'ShippingStreet' | phrase}}&lt;/span&gt;
+            &lt;input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.addressline1'])"
+            name="contact.addressline1" type="text" ng-model="contact.addressLine1"
+            class="form-control" id="contact-addressline1" placeholder="{{'ShippingStreet' | phrase}}"/&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row"&gt;
+        &lt;div class="col-xs-7"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.city'])"&gt;
+                &lt;label class="sr-only" for="contact-city"&gt;{{'ShippingCity' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingCity' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.city'])"
+                       name="contact.city" type="text" ng-model="contact.city"
+                       class="form-control" id="contact-city" placeholder="{{'ShippingCity' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="col-xs-5"&gt;
+            &lt;div class="relative dropdown-caret" ng-if="regionList.US"&gt;
+                &lt;select ng-class="validationClass(form['contact.region'])"
+                        ng-required="(option.requireShipping || variables.forcePhysicalAddressCollection == 'true') &amp;&amp; countryRequiresRegion" ng-change="resetRemoteValidation(form['contact.region'], form['contact.postalCode'])"
+                        name="contact.region" class="form-control form-group" ng-model="contact.region"&gt;
+                    &lt;option value="" disabled="disabled" selected="selected"&gt;{{'ShippingRegion' | phrase}}&lt;/option&gt;
+                    &lt;option ng-repeat="state in regionList.US" ng-value="state.abbreviation" ng-selected="state.abbreviation == contact.region"&gt;{{ state.name }}&lt;/option&gt;
+                &lt;/select&gt;
+            &lt;/div&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.region'])" ng-if="!regionList.US"&gt;
+                &lt;label class="sr-only" for="contact-region"&gt;{{'ShippingRegion' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingRegion' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="(option.requireShipping || variables.forcePhysicalAddressCollection == 'true') &amp;&amp; countryRequiresRegion" ng-change="resetRemoteValidation(form['contact.region'], form['contact.postalCode'])"
+                       name="contact.region" type="text" ng-model="contact.region"
+                       class="form-control" id="contact-region" placeholder="{{'ShippingRegion' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row"&gt;
+        &lt;div class="col-xs-7"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.postalCode'])"&gt;
+                &lt;label class="sr-only" for="contact-postal"&gt;{{'ZipCode' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ZipCode' | phrase}}&lt;/span&gt;
+                &lt;input type="tel" ng-required="(option.requireShipping || variables.forcePhysicalAddressCollection == 'true') &amp;&amp; countryRequiresPostalCode"
+                    ng-change="resetRemoteValidation(form['contact.postalCode']); determineTax();"
+                    name="contact.postalCode" ng-model="contact.postalCode"
+                    class="form-control" id="contact-postal" placeholder="{{'ZipCode' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="col-xs-5 help-block"&gt;
+            &lt;span ng-show="postalTax.calculating" class="postal-spinner glyphicon glyphicon-refresh spin"&gt;&lt;/span&gt;
+            &lt;span class="postal-phrase"&gt;&lt;span&gt;{{'TaxValue' | phrase}}&lt;/span&gt;&amp;#160;&lt;span ng-bind="postalTax.taxPhrase"&gt;&lt;/span&gt;&lt;/span&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row" ng-if="option.requireShipping || variables.forcePhoneNumberCollection == 'false' || variables.forcePhysicalAddressCollection == 'true'"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.phoneNumber'])"&gt;
+                &lt;label class="sr-only" for="contact-phone"&gt;{{'ShippingPhoneNumber' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingPhoneNumber' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.phoneNumber'])"
+                name="contact.phoneNumber" type="text" ng-model="contact.phoneNumber"
+                class="form-control" id="contact-phone" placeholder="{{'ShippingPhoneNumber' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+</script>
+
+<script type="text/ng-template" id="address_JP.html">
+    &lt;div class="row"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.postalCode'])"&gt;
+                &lt;label class="sr-only" for="contact-postal"&gt;{{'ShippingPostalCode' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingPostalCode' | phrase}}&lt;/span&gt;
+                &lt;input type="tel" ng-required="(option.requireShipping || variables.forcePhysicalAddressCollection == 'true') &amp;&amp; countryRequiresPostalCode" ng-change="resetRemoteValidation(form['contact.postalCode'])"
+                name="contact.postalCode" ng-model="contact.postalCode"
+                class="form-control" id="contact-postal" placeholder="{{'ShippingPostalCode' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.region'])"&gt;
+                &lt;label class="sr-only" for="contact-region"&gt;{{'ShippingRegion' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingRegion' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="(option.requireShipping || variables.forcePhysicalAddressCollection == 'true') &amp;&amp; countryRequiresRegion" ng-change="resetRemoteValidation(form['contact.region'], form['contact.postalCode'])"
+                name="contact.region" type="text" ng-model="contact.region"
+                class="form-control" id="contact-region" placeholder="{{'ShippingRegion' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.city'])"&gt;
+                &lt;label class="sr-only" for="contact-city"&gt;{{'ShippingCity' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingCity' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.city'])"
+                name="contact.city" type="text" ng-model="contact.city"
+                class="form-control" id="contact-city" placeholder="{{'ShippingCity' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.addressline1'])"&gt;
+                &lt;label class="sr-only" for="contact-addressline1"&gt;{{'ShippingStreet' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingStreet' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.addressline1'])"
+                name="contact.addressline1" type="text" ng-model="contact.addressLine1"
+                class="form-control" id="contact-addressline1" placeholder="{{'ShippingStreet' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row" ng-if="option.requireShipping || variables.forcePhoneNumberCollection == 'false' || variables.forcePhysicalAddressCollection == 'true'"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.phoneNumber'])"&gt;
+                &lt;label class="sr-only" for="contact-phone"&gt;{{'ShippingPhoneNumber' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingPhoneNumber' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.phoneNumber'])"
+                name="contact.phoneNumber" type="text" ng-model="contact.phoneNumber"
+                class="form-control" id="contact-phone" placeholder="{{'ShippingPhoneNumber' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+</script>
+
+<script type="text/ng-template" id="address_CA.html">
+    &lt;div class="row"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.addressline1'])"&gt;
+                &lt;label class="sr-only" for="contact-addressline1"&gt;{{'ShippingStreet' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingStreet' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.addressline1'])"
+                name="contact.addressline1" type="text" ng-model="contact.addressLine1"
+                class="form-control" id="contact-addressline1" placeholder="{{'ShippingStreet' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.city'])"&gt;
+                &lt;label class="sr-only" for="contact-city"&gt;{{'ShippingCity' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingCity' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.city'])"
+                name="contact.city" type="text" ng-model="contact.city"
+                class="form-control" id="contact-city" placeholder="{{'ShippingCity' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="relative dropdown-caret" ng-if="regionList.CA"&gt;
+                &lt;select ng-class="validationClass(form['contact.region'])"
+                        ng-required="(option.requireShipping || variables.forcePhysicalAddressCollection == 'true') &amp;&amp; countryRequiresRegion" ng-change="resetRemoteValidation(form['contact.region'], form['contact.postalCode'])"
+                        name="contact.region" class="form-control form-group" ng-model="contact.region"&gt;
+                    &lt;option value="" disabled="disabled" selected="selected"&gt;{{'Province' | phrase}}&lt;/option&gt;
+                    &lt;option ng-repeat="state in regionList.CA" ng-value="state.abbreviation" ng-selected="state.abbreviation == contact.region"&gt;{{ state.name }}&lt;/option&gt;
+                &lt;/select&gt;
+            &lt;/div&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.region'])" ng-if="!regionList.CA"&gt;
+                &lt;label class="sr-only" for="contact-region"&gt;{{'Province' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'Province' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="(option.requireShipping || variables.forcePhysicalAddressCollection == 'true') &amp;&amp; countryRequiresRegion" ng-change="resetRemoteValidation(form['contact.region'], form['contact.postalCode'])"
+                       name="contact.region" type="text" ng-model="contact.region"
+                       class="form-control" id="contact-region" placeholder="{{'Province' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.postalCode'])"&gt;
+                &lt;label class="sr-only" for="contact-postal"&gt;{{'ShippingPostalCode' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingPostalCode' | phrase}}&lt;/span&gt;
+                &lt;input type="tel" ng-required="(option.requireShipping || variables.forcePhysicalAddressCollection == 'true') &amp;&amp; countryRequiresPostalCode" ng-change="resetRemoteValidation(form['contact.postalCode'])"
+                name="contact.postalCode" ng-model="contact.postalCode"
+                class="form-control" id="contact-postal" placeholder="{{'ShippingPostalCode' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row" ng-if="option.requireShipping || variables.forcePhoneNumberCollection == 'false' || variables.forcePhysicalAddressCollection == 'true'"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.phoneNumber'])"&gt;
+                &lt;label class="sr-only" for="contact-phone"&gt;{{'ShippingPhoneNumber' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingPhoneNumber' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.phoneNumber'])"
+                name="contact.phoneNumber" type="text" ng-model="contact.phoneNumber"
+                class="form-control" id="contact-phone" placeholder="{{'ShippingPhoneNumber' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+</script>
+
+<script type="text/ng-template" id="address_OTHER.html">
+    &lt;div class="row"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.addressline1'])"&gt;
+                &lt;label class="sr-only" for="contact-addressline1"&gt;{{'ShippingStreet' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingStreet' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.addressline1'])"
+                name="contact.addressline1" type="text" ng-model="contact.addressLine1"
+                class="form-control" id="contact-addressline1" placeholder="{{'ShippingStreet' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.city'])"&gt;
+                &lt;label class="sr-only" for="contact-city"&gt;{{'ShippingCity' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingCity' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.city'])"
+                name="contact.city" type="text" ng-model="contact.city"
+                class="form-control" id="contact-city" placeholder="{{'ShippingCity' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.region'])"&gt;
+                &lt;label class="sr-only" for="contact-region"&gt;{{'ShippingRegion' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingRegion' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="(option.requireShipping || variables.forcePhysicalAddressCollection == 'true') &amp;&amp; countryRequiresRegion" ng-change="resetRemoteValidation(form['contact.region'], form['contact.postalCode'])"
+                       name="contact.region" type="text" ng-model="contact.region"
+                       class="form-control" id="contact-region" placeholder="{{'ShippingRegion' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.postalCode'])"&gt;
+                &lt;label class="sr-only" for="contact-postal"&gt;{{'ShippingPostalCode' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingPostalCode' | phrase}}&lt;/span&gt;
+                &lt;input type="tel" ng-required="(option.requireShipping || variables.forcePhysicalAddressCollection == 'true') &amp;&amp; countryRequiresPostalCode" ng-change="resetRemoteValidation(form['contact.postalCode'])"
+                name="contact.postalCode" ng-model="contact.postalCode"
+                class="form-control" id="contact-postal" placeholder="{{'ShippingPostalCode' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row" ng-if="option.requireShipping || variables.forcePhoneNumberCollection == 'false' || variables.forcePhysicalAddressCollection == 'true'"&gt;
+        &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(form['contact.phoneNumber'])"&gt;
+                &lt;label class="sr-only" for="contact-phone"&gt;{{'ShippingPhoneNumber' | phrase}}&lt;/label&gt;
+                &lt;span class="placeholder"&gt;{{'ShippingPhoneNumber' | phrase}}&lt;/span&gt;
+                &lt;input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.phoneNumber'])"
+                name="contact.phoneNumber" type="text" ng-model="contact.phoneNumber"
+                class="form-control" id="contact-phone" placeholder="{{'ShippingPhoneNumber' | phrase}}"/&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+</script>
+
+<!--
+    Payment Field Dialog
+    http://scotch.io/tutorials/javascript/angularjs-form-validation
+ -->
+<script type="text/ng-template" id="paymentFieldDialog.html">
+    &lt;form name="form" novalidate="novalidate" ng-submit="next(form)"&gt;
+        &lt;fieldset ng-disabled="processing"&gt;
+            &lt;div class="modal-header"&gt;
+                &lt;button type="button" class="close" ng-click="cancel()" aria-hidden="true"&gt;&amp;#215;&lt;/button&gt;
+                &lt;h4 class="modal-title my-title"&gt; {{'PaymentInformationTitle' | phrase}}  &lt;/h4&gt;
+            &lt;/div&gt;
+
+            &lt;div class="modal-body"&gt;
+                &lt;alert type="warning" ng-if="paymentOptionType === 'alipay'"&gt;
+                    {{'AlipayReminder' | phrase}}
+                &lt;/alert&gt;
+
+                &lt;div ng-show="messages.length"&gt;
+                    &lt;alert ng-repeat="msg in messages" type="{{msg.type}}" close="closeMessage($index)"&gt;
+                        &lt;div ng-bind-html="msg.phrase | phrase"&gt;&lt;/div&gt;
+                    &lt;/alert&gt;
+                &lt;/div&gt;
+
+                &lt;!-- //contact-group --&gt;
+                &lt;div ng-if="option.requireContact" class="contact-group"&gt;
+                    &lt;div class="row"&gt;
+                        &lt;div class="col-xs-6" ng-if="!reverseName"&gt;
+                            &lt;div class="form-group" ng-class="validationClass(form['contact.firstName'])"&gt;
+                                &lt;label class="sr-only" for="contact-first-name"&gt;{{'FirstName' | phrase}}&lt;/label&gt; &lt;span class="placeholder"&gt;{{'FirstName' | phrase}}&lt;/span&gt;
+                                &lt;input type="text" name="contact.firstName" input-model email="contact.email" lastname="contact.lastName" firstname="contact.firstName" ng-required="option.requireContact" ng-change="resetRemoteValidation(form['contact.firstName'])"  ng-model="contact.firstName" class="form-control" id="contact-first-name" placeholder="{{'FirstName' | phrase}}" ng-blur="sendNameGa(form['contact.firstName'], form['contact.lastName'])"&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;div class="col-xs-6"&gt;
+                            &lt;div class="form-group" ng-class="validationClass(form['contact.lastName'])"&gt;
+                                &lt;label class="sr-only" for="contact-last-name"&gt;{{'LastName' | phrase}}&lt;/label&gt; &lt;span class="placeholder"&gt;{{'LastName' | phrase}}&lt;/span&gt;
+                                &lt;input type="text" name="contact.lastName" input-model email="contact.email" lastname="contact.lastName" firstname="contact.firstName" ng-required="option.requireContact" ng-change="resetRemoteValidation(form['contact.lastName'])" ng-model="contact.lastName" class="form-control" id="contact-last-name" placeholder="{{'LastName' | phrase}}" ng-blur="sendNameGa(form['contact.lastName'], form['contact.lastName'])"&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;div class="col-xs-6" ng-if="reverseName"&gt;
+                            &lt;div class="form-group" ng-class="validationClass(form['contact.firstName'])"&gt;
+                                &lt;label class="sr-only" for="contact-first-name"&gt;{{'FirstName' | phrase}}&lt;/label&gt; &lt;span class="placeholder"&gt;{{'FirstName' | phrase}}&lt;/span&gt;
+                                &lt;input type="text" name="contact.firstName" input-model email="contact.email" lastname="contact.lastName" firstname="contact.firstName" ng-required="option.requireContact" ng-change="resetRemoteValidation(form['contact.firstName'])"  ng-model="contact.firstName" class="form-control" id="contact-first-name" placeholder="{{'FirstName' | phrase}}" ng-blur="sendNameGa(form['contact.firstName'], form['contact.lastName'])"&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+                    &lt;div class="row" ng-if="variables.showCompanyField === 'enable' || variables.showCompanyField === 'require'"&gt;
+                        &lt;div class="col-xs-12"&gt;
+                            &lt;div class="form-group" ng-class="validationClass(form['contact.company'])"&gt;
+                                &lt;label class="sr-only" for="contact-company"&gt;{{'Company' | phrase}}&lt;/label&gt; &lt;span class="placeholder"&gt;{{'Company' | phrase}}&lt;/span&gt;
+                                &lt;div class="input-group"&gt;
+                                    &lt;span class="input-group-addon"&gt;&lt;span class="glyphicon glyphicon-briefcase"&gt;&lt;/span&gt;&lt;/span&gt;
+                                    &lt;input type="text" name="contact.company" input-model email="contact.email" lastname="contact.lastName" firstname="contact.firstName"  ng-required="variables.showCompanyField == 'require'" spellcheck="off" autocorrect="off" ng-change="resetRemoteValidation(form['contact.company'])" ng-model="contact.company" class="form-control" id="contact-company" placeholder="{{'Company' | phrase}}"&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+                    &lt;div class="row"&gt;
+                        &lt;div class="col-xs-12"&gt;
+                            &lt;div class="form-group" ng-class="validationClass(form['contact.email'])"&gt;
+                                &lt;label class="sr-only" for="contact-email"&gt;{{'Email' | phrase}}&lt;/label&gt; &lt;span class="placeholder"&gt;{{'Email' | phrase}}&lt;/span&gt;
+                                &lt;div class="input-group"&gt;
+                                    &lt;span class="input-group-addon"&gt;&lt;span class="glyphicon glyphicon-envelope"&gt;&lt;/span&gt;&lt;/span&gt;
+                                    &lt;input type="email" name="contact.email" input-model email="contact.email" lastname="contact.lastName" firstname="contact.firstName" ng-required="option.requireContact"  autocompletetype="email" spellcheck="off" autocorrect="off" ng-change="resetRemoteValidation(form['contact.email'])" ng-model="contact.email" class="form-control" id="contact-email" placeholder="{{'Email' | phrase}}" ng-blur="sendEmailGa(form['contact.email'],'Payment Window')"&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;!-- // contact-group --&gt;
+
+                &lt;!-- //card-group --&gt;
+                &lt;div ng-if="option.requireCard" class="card-group"&gt;
+                    &lt;!-- //CC row --&gt;
+                    &lt;div class="row"&gt;
+                        &lt;div class="col-xs-12"&gt;
+                            &lt;div class="form-group" ng-class="validationClass(form['card.number'])"&gt;
+                                &lt;label class="sr-only" for="card-number"&gt;{{'CardNumber' | phrase}}&lt;/label&gt;
+                                &lt;span class="placeholder"&gt;{{'CardNumber' | phrase}}&lt;/span&gt;
+                                &lt;div class="input-group"&gt;
+                                    &lt;span class="input-group-addon"&gt;&lt;span class="glyphicon glyphicon-credit-card"&gt;&lt;/span&gt;&lt;/span&gt;
+                                    &lt;input type="tel" ng-required="option.requireCard"  name="card.number"
+                                    credit-card-input credit-card-type="true"
+                                    autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off"
+                                    ng-change="resetRemoteValidation(form['card.number'])"
+                                    ng-pattern="/^\d[\d ]+\d$/"
+                                    ng-model="card.number" class="form-control" id="card-number"
+                                    ng-blur ="sendCardGa(form['card.number'], form['card.month'], form['card.year'],form['card.security'])"
+                                    placeholder="{{'CardNumberPlaceholder' | phrase}}"/&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+                    &lt;!--// Begin Expire + Code row --&gt;
+                    &lt;div class="row"&gt;
+                        &lt;div class="col-sm-6"&gt;
+                            &lt;div class="form-group" ng-class="validationClass(form['card.month'], form['card.year'])"&gt;
+                                &lt;div class="input-group"&gt;
+                                    &lt;span class="input-group-addon"&gt;&lt;span class="glyphicon glyphicon-calendar"&gt;&lt;/span&gt;&lt;/span&gt;
+
+                                    &lt;label class="sr-only" for="card-expire-month"&gt;{{'CardExpireMonth' | phrase}}&lt;/label&gt;
+                                    &lt;input type="tel" ng-required="option.requireCard" name="card.month"
+                                    class="form-control form-control-half-inline"
+                                    autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off"
+                                    ng-change="resetRemoteValidation(form['card.month'], form['card.year'])"
+                                    ng-pattern="/^\d{1,2}$/"
+                                    ng-model="card.month" id="card-expire-month"
+                                    ng-blur ="sendCardGa(form['card.number'], form['card.month'], form['card.year'],form['card.security'])"
+                                    placeholder="{{'CardExpireMonthPlaceholder' | phrase}}"/&gt;
+
+                                    &lt;label class="sr-only" for="card-expire-year"&gt;{{'CardExpireYear' | phrase}}&lt;/label&gt;
+                                    &lt;input type="tel" ng-required="option.requireCard"  name="card.year"
+                                    class="form-control form-control-half-inline"
+                                    autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off"
+                                    ng-change="resetRemoteValidation(form['card.year'], form['card.month'])"
+                                    ng-pattern="/^\d{2,4}$/"
+                                    ng-model="card.year" id="card-expire-year"
+                                    ng-blur ="sendCardGa(form['card.number'], form['card.month'], form['card.year'],form['card.security'])"
+                                    placeholder="{{'CardExpireYearPlaceholder' | phrase}}"/&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;div class="col-sm-6"&gt;
+                            &lt;div class="form-group" ng-class="validationClass(form['card.security'])"&gt;
+                                &lt;label class="sr-only" for="card-security"&gt;{{'CardSecurityCode' | phrase}}&lt;/label&gt;
+                                &lt;div class="input-group"&gt;
+                                    &lt;span class="input-group-addon"&gt;&lt;span class="glyphicon glyphicon-lock"&gt;&lt;/span&gt;&lt;/span&gt;
+                                    &lt;input type="text" id="card-security" name="card.security" ng-required="option.requireCard"
+                                    ng-model="card.security" class="form-control"
+                                    ng-blur ="sendCardGa(form['card.number'], form['card.month'], form['card.year'],form['card.security'])"
+                                    autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off"
+                                    ng-change="resetRemoteValidation(form['card.security'])"
+                                    ng-pattern="/^(\*\w+|[0-9]{3,4})$/"
+                                    placeholder="{{'CardSecurityCodePlaceholder' | phrase}}"
+                                    ns-popover ns-popover-template="cardSecurityCodePopover.html" ns-popover-plain="false"
+                                    ns-popover-placement="top|right" ns-popover-hide-on-inside-click="true"/&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;!--// End Expire + Code row --&gt;
+                    &lt;div ng-if="currency === 'BRL'" class="small text-muted"&gt;{{'CardInfoBRL' | phrase}}&lt;/div&gt;
+
+                &lt;/div&gt;
+                &lt;!-- //end card-group --&gt;
+
+                &lt;!-- Country --&gt;
+                &lt;input type="hidden" name="contact.country" ng-init="contact.country=country" ng-model="contact.country" ng-value="country"/&gt;
+
+                &lt;!--
+                    Force phone number field
+                --&gt;
+                &lt;div ng-if="!option.requireShipping &amp;&amp; variables.forcePhoneNumberCollection == 'true' &amp;&amp; variables.forcePhysicalAddressCollection == 'false'"&gt;
+                    &lt;div class="form-group" ng-class="validationClass(form['contact.phoneNumber'])"&gt;
+                        &lt;label class="sr-only" for="contact-phone"&gt;{{'ShippingPhoneNumber' | phrase}}&lt;/label&gt;
+                        &lt;span class="placeholder"&gt;{{'ShippingPhoneNumber' | phrase}}&lt;/span&gt;
+                        &lt;input required ng-change="resetRemoteValidation(form['contact.phoneNumber'])"
+                               name="contact.phoneNumber" type="tel" ng-model="contact.phoneNumber"
+                               class="form-control" id="contact-phone" placeholder="{{'ShippingPhoneNumber' | phrase}}"/&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;!-- /forced-phone-number --&gt;
+
+                &lt;!--Billing Postal Code--&gt;
+                &lt;!-- postal-group --&gt;
+                &lt;div ng-if="option.requireBillingPostal &amp;&amp; variables.forcePhysicalAddressCollection != 'true' &amp;&amp; !option.requireShipping" class="billing-postal-group"&gt;
+                    &lt;div class="row" ng-if="country == 'US'"&gt; 
+			    &lt;div class="form-group col-sm-7" ng-class="validationClass(form['contact.postalCode'])"&gt;
+				&lt;label class="sr-only" for="postal"&gt;{{'ZipCode' | phrase}}&lt;/label&gt;
+				&lt;span class="placeholder"&gt;{{'ZipCode' | phrase}}&lt;/span&gt;
+				&lt;input ng-required="option.requireBillingPostal" type="text" name="contact.postalCode"
+					ng-model="contact.postalCode" class="form-control" id="postal" ng-change="resetRemoteValidation(form['contact.postalCode']); determineTax();"
+					autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off"
+					placeholder="{{'ZipCode' | phrase}}"/&gt;
+			    &lt;/div&gt;
+			    &lt;div class="col-sm-5 help-block"&gt;
+				&lt;span ng-show="postalTax.calculating" class="postal-spinner glyphicon glyphicon-refresh spin"&gt;&lt;/span&gt;
+				&lt;span class="postal-phrase"&gt;&lt;span&gt;{{'TaxValue' | phrase}}&lt;/span&gt;&amp;#160;&lt;span ng-bind="postalTax.taxPhrase"&gt;&lt;/span&gt;&lt;/span&gt;
+			    &lt;/div&gt;
+		    &lt;/div&gt;
+                    &lt;div class="form-group" ng-class="validationClass(form['contact.postalCode'])" ng-if="country != 'US'"&gt;
+                        &lt;label class="sr-only" for="postal"&gt;{{'BillingPostalCode' | phrase}}&lt;/label&gt;
+                        &lt;span class="placeholder"&gt;{{'BillingPostalCode' | phrase}}&lt;/span&gt;
+                        &lt;input ng-required="option.requireBillingPostal" type="text" name="contact.postalCode"
+                        ng-model="contact.postalCode" class="form-control" id="postal" ng-change="resetRemoteValidation(form['contact.postalCode'])"
+                        autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off"
+                        placeholder="{{'BillingPostalCode' | phrase}}"/&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;!-- / postal-group --&gt;
+
+                &lt;!--//Shipping / Recipient Information--&gt;
+                &lt;div ng-if="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'"&gt;
+                    &lt;div class="panel panel-custom panel-default"&gt;
+                        &lt;div class="panel-heading" ng-if="option.requireShipping"&gt;
+                            &lt;h3 class="panel-title" ng-class="{'text-center': variables.textAlign == 'center', 'text-right': variables.textAlign == 'right'}"&gt;{{'ShippingTitle' | phrase}}&lt;/h3&gt;
+                        &lt;/div&gt;
+                        &lt;div class="panel-heading" ng-if="!option.requireShipping"&gt;
+                            &lt;h3 class="panel-title" ng-class="{'text-center': variables.textAlign == 'center', 'text-right': variables.textAlign == 'right'}"&gt;{{'BillingAddress' | phrase}}&lt;/h3&gt;
+                        &lt;/div&gt;
+
+                        &lt;div class="panel-body"&gt;
+                            &lt;div id="address" ng-include="getAddressTemplate()"&gt;&lt;/div&gt;
+
+                            &lt;div class="row"&gt;
+                                &lt;div class="col-xs-12"&gt;
+                                    &lt;div class="country-icon" ng-style="countryIconCss()"&gt;
+                                        &lt;span ng-bind-html="countryDisplay"&gt;&lt;/span&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;!-- / address-group --&gt;
+                &lt;div ng-if="containsAdhoc" class="well well-sm text-muted subscriptions-well text-center"&gt;
+                    {{'OrderContainsAdhoc' | phrase}}
+                &lt;/div&gt;
+
+                &lt;div class="row" ng-if="option.requireCustomerReference"&gt;
+                    &lt;div class="col-xs-12"&gt;
+                        &lt;div class="form-group"&gt;
+                            &lt;lable class="sr-only"&gt;{{'CustomerReference' | phrase}}&lt;/lable&gt; &lt;span class="placeholder"&gt;{{'CustomerReference' | phrase}}&lt;/span&gt;
+                            &lt;input type="text" input-model ng-model="customerReference.id" class="form-control" id="customer-reference" placeholder="{{'CustomerReference' | phrase}}"&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt; &lt;!-- / modal-body --&gt;
+
+            &lt;div class="modal-footer"&gt;
+                &lt;button ng-hide="processing" ng-if="paymentOptionType != 'free' &amp;&amp; !priceFree(total)" type="submit" class="btn placeOrderBtn pay-button"&gt;{{'Pay' | phrase:totalWithTax }}&lt;span class="glyphicon glyphicon-chevron-right"&gt;&lt;/span&gt;&lt;/button&gt;
+                &lt;button ng-hide="processing" ng-if="paymentOptionType == 'free'" type="submit" class="btn placeOrderBtn pay-button"&gt;{{'PlaceYourOrder' | phrase}}&lt;span class="glyphicon glyphicon-chevron-right"&gt;&lt;/span&gt;&lt;/button&gt;
+                &lt;button ng-hide="processing" ng-if="paymentOptionType != 'free' &amp;&amp; priceFree(total)" type="submit" class="btn placeOrderBtn pay-button"&gt;{{'SavePaymentDetails' | phrase}}&lt;span class="glyphicon glyphicon-chevron-right"&gt;&lt;/span&gt;&lt;/button&gt;
+                &lt;div&gt;&lt;span class="glyphicon glyphicon-refresh spin total-pay-refresh"&gt;&lt;/span&gt;&lt;span class="sr-only"&gt;{{'WaitRedirectTitle' | phrase}}&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/fieldset&gt;
+    &lt;/form&gt;
+</script>
+
+<!--
+    Payment Widget Dialog
+ -->
+<script type="text/ng-template" id="widgetDialog.html">
+&lt;div class="modal-header"&gt;
+    &lt;button type="button" class="close" ng-click="cancel()" aria-hidden="true"&gt;&amp;#215;&lt;/button&gt;
+    &lt;h4 class="modal-title"&gt;{{widgetTitlePhrase | phrase}}&lt;/h4&gt;
+&lt;/div&gt;
+
+&lt;div class="modal-body"&gt;
+    &lt;iframe ng-src="{{url}}" width="{{widgetWidth}}px" height="{{widgetHeight}}px" scrolling="auto" allowtransparency="true" frameborder="0"/&gt;
+&lt;/div&gt;
+</script>
+
+<!-- Template for suggested offers-->
+    <script type="text/ng-template" id="offerTemplate.html">
+        &lt;div class="panel panel-default panel-custom" &gt;
+            &lt;div class="panel-body"&gt;
+                &lt;table ng-class="{'table-small': itemType == 'small', 'offer-table': itemType != 'small'}" &gt;
+                    &lt;tr&gt;
+                        &lt;td class="offer-cell" align="center" valign="center" class="bottom-padding left-right-padding"
+                        ng-class="{'fixed-height-small': itemType == 'small', 'fixed-height-large': itemType != 'small'}"&gt;
+                            &lt;div class="offer-image" ng-show="offerItem.image" ng-style="imageStyle(offerItem)"&gt;&lt;/div&gt;
+                        &lt;/td&gt;
+                        &lt;td valign="center"
+                        ng-class="{'fixed-height-small': itemType == 'small', 'fixed-height-large': itemType != 'small'}"&gt;
+                            &lt;div class="bottom-white-gradient offer-max-height" ng-class="{'small-max-height' : itemType == 'small', 'large-max-height' : itemType == 'large', 'large-single-max-height' : itemType == 'large-single'}"&gt;
+                                &lt;div class="item-secondary-offer-display"&gt;
+                                    &lt;strong class="offer-title" product-title item="offerItem" currency="order.currency"&gt;&lt;/strong&gt;
+                                    &lt;!-- //Custom badges from attributes --&gt;
+                                    &lt;span ng-if ="offerItem.bundle" class="label label-success label-as-badge"&gt; {{'Bundle' | phrase}}&lt;/span&gt;
+                                    &lt;span ng-if ="offerItem.attributes.customBadge" ng-style="customColor(offerItem.attributes.customBadgeColor)" class="label label-as-badge custom-badge"&gt; {{offerItem.attributes.customBadge}} &lt;/span&gt;
+
+                                &lt;/div&gt;
+                                &lt;div class="text-muted" ng-show="offerItem.description.summary" ng-bind-html="offerItem.description.summary"&gt;&lt;/div&gt;
+                                &lt;div class="small" ng-show="offerItem.terms" ng-bind-html="offerItem.terms"&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+
+                            &lt;table ng-show="itemType == 'large-single'" class="no-padding"&gt;
+                            &lt;tr&gt;
+                                &lt;td class="no-padding"&gt;
+                                    &lt;button class="btn" ng-click="acceptOffer(offerItem, offer.type)" ng-class="BtnClass(offer)"&gt;
+                                        &lt;span ng-show="offerItem.description.action" ng-bind-html="offerItem.description.action"&gt;&lt;/span&gt;
+                                        &lt;span ng-show="!offerItem.description.action"&gt; {{'Add' | phrase}} &lt;/span&gt;
+                                    &lt;/button&gt;
+                                &lt;/td&gt;
+                                &lt;td&gt;
+                                    &lt;div class="price-narrow"&gt;
+                                        &lt;!--//old price--&gt;
+                                        &lt;span class="text-muted" ng-if="offerItem.unitDiscountValue"&gt;
+                                            &lt;small&gt;&lt;del&gt; {{ offerItem.priceTotal}}&lt;/del&gt;
+                                            &lt;/small&gt;
+                                        &lt;/span&gt;
+                                        &lt;!--//new price--&gt;
+                                        &lt;div&gt;
+                                            &lt;strong class="price {{offerItem.total |priceColor}}"&gt;{{ offerItem.total |price }}&lt;/strong&gt;
+                                        &lt;div&gt;
+                                    &lt;/div&gt;
+                                &lt;/td&gt;
+                            &lt;/tr&gt;
+                            &lt;/table&gt;
+
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr class="price-action-block" ng-hide="itemType == 'large-single'"&gt;
+                        &lt;td align="center" class="v-center"&gt;
+                            &lt;div class="price-narrow"&gt;
+                                &lt;!--//old price--&gt;
+                                &lt;span class="text-muted" ng-if="offerItem.unitDiscountValue"&gt;
+                                    &lt;small&gt;&lt;del&gt; {{ offerItem.priceTotal}}&lt;/del&gt;
+                                    &lt;/small&gt;
+                                &lt;/span&gt;
+                                &lt;!--//new price--&gt;
+                                &lt;strong class="price {{offerItem.total |priceColor}}"&gt;{{ offerItem.total |price }}&lt;/strong&gt;
+                            &lt;/div&gt;
+                        &lt;/td&gt;
+
+                        &lt;td align="left"&gt;
+                            &lt;button class="btn" ng-click="acceptOffer(offerItem, offer.type)" ng-class="BtnClass(offer)"&gt;
+                                &lt;span ng-show="offerItem.description.action" ng-bind-html="offerItem.description.action"&gt;&lt;/span&gt;
+                                &lt;span ng-show="!offerItem.description.action"&gt; {{'Add' | phrase}} &lt;/span&gt;
+                            &lt;/button&gt;
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                &lt;/table&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    </script>
+
+<!-- Template for offers positioned above or below -->
+<script type="text/ng-template" id="positionAboveBelowTemplate.html">
+
+    &lt;div class="col-xs-12 col-sm-12" ng-show="(offer.items.length &gt; 0) &amp;&amp; ( (offer.items|filter:{selected:false}).length&gt;0)"&gt;
+        &lt;h4 class="group-display" ng-show="offer.display" ng-bind-html="offer.display" ng-class="{'text-center': variables.textAlign == 'center', 'text-right': variables.textAlign == 'right'}"&gt;&lt;/h4&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row" ng-show="(offer.items |filter:showItem()|filter: {selected:false}).length&gt;0"&gt;
+        &lt;div class="wrapper"&gt;
+            &lt;div class="col-xs-12 col-sm-6"  ng-repeat="offerItem in offer.items |filter:showItem() |filter: {selected:false} " ng-class="offerItem.styleClass"
+                ng-hide="$last &amp;&amp; $even" &gt;
+                &lt;offer-item-tpl offer-item="offerItem" offer="offer" item-type="'small'"&gt; &lt;/offer-item-tpl&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="row" ng-show="(offer.items |filter:showItem() |filter: {selected:false}).length&gt;0"&gt;
+        &lt;div class="wrapper"&gt;
+            &lt;div class="col-xs-12 col-sm-12"  ng-repeat="offerItem in offer.items |filter:showItem() |filter: {selected:false} "
+            ng-class="offerItem.styleClass"
+            ng-show="$last &amp;&amp; $even" &gt;
+                &lt;offer-item-tpl offer-item="offerItem" offer="offer" item-type="'large-single'"
+                ng-if="(offer.items|filter:{selected:false}).length == 1" &gt; &lt;/offer-item-tpl&gt;
+
+                &lt;offer-item-tpl offer-item="offerItem" offer="offer" item-type="'large'"
+                ng-if="(offer.items|filter:{selected:false}).length &gt; 1" &gt; &lt;/offer-item-tpl&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+</script>
+
+<script type="text/ng-template" id="underPaymentTemplate.html">
+    &lt;h4 class="group-display" ng-show="offer.display &amp;&amp; (offer.items.length &gt; 0) &amp;&amp; ((offer.items|filter:{selected:false}).length&gt;0)" ng-bind-html="offer.display" ng-class="{'text-center': variables.textAlign == 'center', 'text-right': variables.textAlign == 'right'}"&gt;
+    &lt;/h4&gt;
+    &lt;div ng-repeat="offerItem in offer.items | filter: {selected:false} |filter:showItem()" ng-class="offerItem.styleClass"&gt;
+        &lt;div class="panel panel-custom panel-default"&gt;
+            &lt;div class="panel-body"&gt;
+                &lt;div&gt;
+                    &lt;div ng-show="offerItem.image" class="offer-image img center-block" ng-style="imageStyle(offerItem)"&gt; &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;td class="item-secondary-offer-display"&gt;
+
+                            &lt;strong class="offer-title" product-title item="offerItem" currency="order.currency"&gt;&lt;/strong&gt;
+                            &lt;!-- //Custom badges from attributes --&gt;
+                            &lt;span ng-if ="offerItem.bundle" class="label label-success label-as-badge"&gt; {{'Bundle' | phrase}}&lt;/span&gt;
+                            &lt;span ng-if ="offerItem.attributes.customBadge" ng-style="customColor(offerItem.attributes.customBadgeColor)" class="label label-as-badge custom-badge"&gt; {{offerItem.attributes.customBadge}} &lt;/span&gt;
+
+                        &lt;/td&gt;
+                        &lt;td align="right"&gt; &lt;strong class="price {{offerItem.total |priceColor}}"&gt; {{ offerItem.total |price }} &lt;/strong&gt; &lt;/td&gt;
+                    &lt;/tr&gt;
+                &lt;/table&gt;
+                &lt;div class="text-muted text-center" ng-show="offerItem.description.summary" ng-bind-html="offerItem.description.summary"&gt;&lt;/div&gt;
+                &lt;div class="small" ng-show="offerItem.terms" ng-bind-html="offerItem.terms"&gt;&lt;/div&gt;
+
+                &lt;button class="btn btn-block" ng-click="acceptOffer(offerItem, offer.type)" ng-class="BtnClass(offer)"&gt;
+                    &lt;span ng-show = "offerItem.description.action" ng-bind-html="offerItem.description.action"&gt;&lt;/span&gt;
+                    &lt;span ng-hide = "offerItem.description.action"&gt; {{'Add' | phrase}} &lt;/span&gt;
+                &lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+</script>
+
+<script type="text/ng-template" id="tooltipVolumeTpl.html">
+    &lt;div&gt;
+        &lt;div ng-repeat="tier in item.discount.data.tiers"&gt;
+            &lt;span ng-if="tier.percent"&gt;{{tier.quantity}}+&amp;nbsp;&amp;nbsp;&amp;nbsp;|&amp;nbsp;&amp;nbsp;&amp;nbsp;-{{tier.percent}}&lt;/span&gt;
+            &lt;span ng-if="tier.amount"&gt;{{tier.quantity}}+&amp;nbsp;&amp;nbsp;&amp;nbsp;|&amp;nbsp;&amp;nbsp;&amp;nbsp;-{{tier.amount}}&lt;/span&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+</script>
+
+<!-- Lightbox is used to compare offer with it's replacement  -->
+<script type="text/ng-template" id="LightBox.html">
+    &lt;!-- //header --&gt;
+    &lt;div class="row no-margin"&gt;
+        &lt;div class="col-sm-3 modal-header grey hidden-xs"&gt;
+            &lt;h4 class="modal-title"&gt;&lt;span&gt; {{'LightBox.InYourCart' | phrase}} &lt;/span&gt;&lt;/h4&gt;
+        &lt;/div&gt;
+        &lt;div class="col-sm-9 modal-header "&gt;
+            &lt;button type="button" class="close" ng-click="cancel()" aria-hidden="true"&gt;&amp;#215;&lt;/button&gt;
+            &lt;h4 class="modal-title"&gt;&lt;span&gt; {{'LightBox.UpgradeAvailable' | phrase}} &lt;/span&gt;&lt;/h4&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- //body --&gt;
+    &lt;div class="row no-margin flex"&gt;
+        &lt;div class="col-sm-3 modal-body text-center grey flex hidden-xs fl-center"&gt;
+            &lt;div&gt;
+                &lt;div class="wrap"&gt;
+                    &lt;div class="text-center"&gt; {{driver.display}} &lt;/div&gt;
+                    &lt;div class="driver-image" ng-style="imageStyle(driver)"&gt;&lt;/div&gt;
+                    &lt;!--//new price only--&gt;
+                    &lt;div&gt;
+                        &lt;strong class="price {{driver.total |priceColor}}"&gt;{{ driver.total |price }}&lt;/strong&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="col-sm-9 modal-body"&gt;
+            &lt;div class="row flex fl-center"&gt;
+                &lt;div class="col-sm-4 text-center"&gt;
+                    &lt;div&gt;
+                        &lt;div class="lightbox-image" ng-style="imageStyle(lightboxElement)"&gt;&lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;div class="col-sm-8"&gt;
+                    &lt;div class="fl-center"&gt;
+                        &lt;div class="lightbox-title"&gt; {{lightboxElement.display}} &lt;/div&gt;
+                        &lt;div ng-bind-html="lightboxElement.description.summary"&gt; &lt;/div&gt;
+                        &lt;div class="price-narrow"&gt;
+                            &lt;!--//old price--&gt;
+                            &lt;div class="text-muted" ng-if="lightboxElement.unitDiscountValue &gt; 0"&gt;
+                                &lt;small&gt;&lt;del&gt; {{ lightboxElement.priceTotal}}&lt;/del&gt;
+                                &lt;/small&gt;
+                            &lt;/div&gt;
+                            &lt;!--//new price--&gt;
+                            &lt;div&gt;
+                                &lt;strong class="price {{lightboxElement.total |priceColor}}"&gt;{{ lightboxElement.total |price }}&lt;/strong&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- //footer --&gt;
+    &lt;div class="row no-margin"&gt;
+        &lt;div class="col-sm-3 modal-footer text-center grey hidden-xs"&gt;
+            &lt;button class="btn btn-default col-sm-12" ng-click="cancel()"&gt;{{'Continue' | phrase}}&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class="col-sm-9 modal-footer text-center"&gt;
+            &lt;button class="btn btn-success" ng-click="acceptOffer(lightboxElement)"&gt;{{'UpgradeAndContinue'| phrase}} &lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!--//Below  visible on xs screens only --&gt;
+    &lt;div class="col-sm-3 modal-header grey visible-xs"&gt;
+        &lt;h4 class="modal-title"&gt;&lt;span&gt; {{'LightBox.InYourCart' | phrase}} &lt;/span&gt;&lt;/h4&gt;
+    &lt;/div&gt;
+    &lt;div class="col-sm-3 text-center grey visible-xs"&gt;
+        &lt;div class="driver-image center-block" ng-style="imageStyle(driver)"&gt;&lt;/div&gt;
+        &lt;div class="text-center"&gt; {{driver.display}} &lt;/div&gt;
+        &lt;!--//new price--&gt;
+        &lt;div&gt;
+            &lt;strong class="price {{driver.total |priceColor}}"&gt;{{ driver.total |price }}&lt;/strong&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="col-sm-3 modal-footer text-center grey visible-xs"&gt;
+        &lt;button class="btn btn-default col-sm-12" ng-click="cancel()"&gt; {{'Continue' | phrase}} &lt;/button&gt;
+    &lt;/div&gt;
+</script>
+
+
+<script type="text/ng-template" id="abandonmentPopup.html">
+    &lt;div class="modal-header no-border" ng-class="{'text-center': variables.popupHeadingAlign == 'center', 'text-right': variables.popupHeadingAlign == 'right'}"&gt;
+        &lt;button type="button" class="close" ng-click="cancel()" aria-hidden="true"&gt;&amp;#215;&lt;/button&gt;
+        &lt;h4 class="modal-title"&gt; {{ variables.popupTitle }} &lt;/h4&gt;
+    &lt;/div&gt;
+
+    &lt;div class="modal-body" ng-class="{'text-center': variables.popupTextAlign == 'center', 'text-right': variables.popupTextAlign == 'right'}"&gt;
+        &lt;p ng-bind-html="variables.popupText"&gt;  &lt;/p&gt;
+
+        &lt;!--&lt;form name ="popupForm" ng-if ="variables.popupEmailReminder" class="form-group" ng-class="validationClass(popupForm['contact.email'])"&gt;
+            &lt;label class="sr-only" for="contact-email"&gt;{{'Email' | phrase}}&lt;/label&gt; &lt;span class="placeholder"&gt;{{'Email' | phrase}}&lt;/span&gt;
+            &lt;div class="input-group"  ng-class="validationClass(popupForm['contact.email'])"&gt;
+                &lt;span class="input-group-addon"&gt;&lt;span class="glyphicon glyphicon-envelope"&gt;&lt;/span&gt;&lt;/span&gt;
+                &lt;input input-model email="contact.email"  name="contact.email" type="email" autocompletetype="email" spellcheck="off" autocorrect="off" ng-change="resetRemoteValidation(popupForm['contact.email'])" ng-blur="sendEmailGa(popupForm['contact.email'],'Homepage')" ng-model="contact.email" class="form-control" id="contact-email" placeholder="{{'Email' | phrase}}"&gt;
+            &lt;/div&gt;
+        &lt;/form&gt;--&gt;
+        &lt;!--&lt;button  ng-if ="variables.popupEmailReminder" class="btn btn-primary"&gt; Email purchase link &lt;/button&gt;--&gt;
+
+        &lt;div class="popup-image" ng-show="variables.popupImage"&gt; &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="modal-footer no-border" ng-class="{'text-center': variables.popupButtonAlign == 'center', 'text-left': variables.popupButtonAlign == 'left'}"&gt;
+        &lt;button ng-hide="variables.popupCoupon" class="btn placeOrderBtn" ng-click="completeOrder()"&gt;
+            {{'Abandonment.CompleteYourOrder' | phrase}}  &lt;/button&gt;
+        &lt;button ng-show="variables.popupCoupon" class="btn placeOrderBtn" ng-click="purchaseWithDiscount()"&gt;
+            {{'Abandonment.PurchaseWithDiscount'| phrase}} &lt;/button&gt;
+    &lt;/div&gt;
+
+</script>
+
+
+<script type="text/ng-template" id="price-row.html">
+    &lt;!--//old price--&gt;
+    &lt;small class="price-item text-muted" ng-if="item.unitDiscountValue"&gt;&lt;del&gt; {{ item.price }}&lt;/del&gt;
+    &lt;/small&gt;
+
+    &lt;div class="price-row"&gt;
+        &lt;!--//price--&gt;
+        &lt;strong ng-if="item.pricing.quantity == 'allow' &amp;&amp; item.subscription.intervalUnit == 'adhoc'" ng-hide="showTerms &amp;&amp; item.unitPriceValue === 0 &amp;&amp; variables.hideFree === 'true' &amp;&amp; item.unitDiscountValue === 0" class="price-item price {{item.unitPrice |priceColor}}"&gt;{{ item.unitPrice }}&lt;/strong&gt;
+        &lt;strong ng-if="item.pricing.quantity == 'allow' &amp;&amp; item.subscription.intervalUnit != 'adhoc'" ng-hide="showTerms &amp;&amp; item.unitPriceValue === 0 &amp;&amp; variables.hideFree === 'true' &amp;&amp; item.unitDiscountValue === 0" class="price-item price {{item.unitPrice |priceColor}}"&gt;{{ item.unitPrice |price }}&lt;/strong&gt;
+        &lt;!--//Total price for all items if quantity locked or hidden--&gt;
+        &lt;strong ng-if="!(item.pricing.quantity == 'allow')" ng-hide="showTerms &amp;&amp; item.unitPriceValue === 0 &amp;&amp; variables.hideFree === 'true' &amp;&amp; item.unitDiscountValue === 0" class="price-item price {{item.total |priceColor}}"&gt;{{ item.total |price }}&lt;/strong&gt;
+
+        &lt;div ng-include="'quantity.html'"&gt;&lt;/div&gt;
+    &lt;/div&gt; &lt;!--//end of price-row-div--&gt;
+
+    &lt;!--//Unselected - Button with action--&gt;
+    &lt;div&gt;
+        &lt;button ng-hide="item.selected || showTerms" class="btn btn-sm" ng-click="acceptOffer(item, offer.type)" ng-class="BtnClass(offer)"&gt;
+            &lt;span ng-show="item.description.action" ng-bind-html="item.description.action"&gt;&lt;/span&gt;
+            &lt;span ng-hide="item.description.action"&gt; {{'Add' | phrase}} &lt;/span&gt;
+        &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;!--//Volume pricing --&gt;
+    &lt;div ng-show="item.selected &amp;&amp; item.discount.data.tiers.length&gt;0" ng-include="'volume-pricing.html'"&gt; &lt;/div&gt;
+
+    &lt;!-- //You save text --&gt;
+    &lt;div ng-show="item.selected &amp;&amp; item.discountPercent &amp;&amp; item.discountTotalValue != 0" class="nowrap-text price-item text-success small"&gt;
+        &lt;div&gt;{{'SavingsTitle' | phrase}}
+            {{ item.discountTotal }} ({{ item.discountPercent }})
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!--//Coupon discount reason  text  --&gt;
+    &lt;div ng-show="item.discount.reason"&gt;
+        &lt;p class=" price-item small text-muted"&gt; {{item.discount.reason}} &lt;p&gt;
+    &lt;/div&gt;
+</script>
+
+
+<script type="text/ng-template" id="groupNextToDriver.html">
+    &lt;div class="panel-heading" ng-if="false"&gt;
+        &lt;!-- //TODO: when groups done finish panel title logic  --&gt;
+        &lt;h3 class="panel-title" &gt;&lt;span class="glyphicon glyphicon-shopping-cart"&gt;&lt;/span&gt;
+        &lt;span ng-if="false" &gt; {{'OrderSectionTitle' | phrase}} &lt;/span&gt; &lt;/h3&gt;
+    &lt;/div&gt;
+
+    &lt;div class="panel-heading" ng-if="innerGroup.display"&gt;
+        &lt;h3 class="panel-title"&gt; &lt;span&gt;{{innerGroup.display}}&lt;/span&gt; &lt;/h3&gt;
+    &lt;/div&gt;
+
+    &lt;div ng-show="groups.length" class="relative"&gt;
+        &lt;div class="app-update-indicator"&gt;
+            &lt;span class="glyphicon glyphicon-refresh"&gt;&lt;/span&gt;
+            &lt;span class="sr-only"&gt;{{'Updating' | phrase}}&lt;/span&gt;
+        &lt;/div&gt;
+
+        &lt;div&gt;
+            &lt;!-- //begin top level items --&gt;
+            &lt;div class="tr" ng-repeat="item in innerGroup.items"&gt;
+                &lt;!-- //show top level item --&gt;
+                &lt;table class="table" data-item-row="" item="item" replitems="replItems" replaceselection="replaceSelection" offer="innerGroup" ordergroup="innerGroup" language="languageObj"&gt;&lt;/table&gt;
+                &lt;div class="tr visible-xs additional-row"&gt; &lt;div class="td"&gt;&lt;/div&gt;&lt;div class="td"&gt;&lt;/div&gt; &lt;div class="td"  data-price-row item="item" offer="innerGroup" &gt;&lt;/div&gt;&lt;/div&gt;
+
+                &lt;!-- //begin item level groups --&gt;
+                &lt;!-- //bundles are filtered from here  --&gt;
+                &lt;div class="tr group" ng-class="{'hidden': (itemGroup.display == null)}"
+                ng-repeat="itemGroup in item.groups |filter: {type: !'bundle'}" ng-show="itemGroups.selections == true"&gt;
+                    &lt;div class="td"&gt;&lt;h4 ng-bind-html="itemGroup.display"&gt;&lt;/h4&gt;&lt;/div&gt;
+                    &lt;!-- //show child items --&gt;
+                    &lt;table class="table" ng-repeat="itemGroupItem in itemGroup.items |filter: {selected: 'true'}" class="group-item" data-item-row="" item="itemGroupItem" offer="innerGroup" ordergroup="innerGroup" language="languageObj"&gt;
+                    &lt;/table&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+</script>
+
+<script type="text/ng-template" id="cardSecurityCodePopover.html">
+    &lt;div class="arrow"&gt;&lt;/div&gt;
+    &lt;div credit-card-type-class class="modal-body card-security-code-popover small"&gt;
+      &lt;span ng-hide="ccType === 'amex'"&gt;{{'CardSecurityCodeHint' | phrase}}&lt;/span&gt;
+      &lt;span ng-show="ccType === 'amex'"&gt;{{'CardSecurityCodeHintAmex' | phrase}}&lt;/span&gt;
+      &lt;i class="cvv-hint"&gt;&lt;/i&gt;
+    &lt;/div
+</script>
+
+<script type="text/ng-template" id="testMode.html">
+    &lt;div class="arrow"&gt;&lt;/div&gt;
+    &lt;div class="modal-body text-center"&gt;
+        &lt;p&gt;You are accessing this storefront in test mode. You can purchase products using the card number&lt;/p&gt;
+        &lt;p&gt;&lt;code&gt;4242 4242 4242 4242&lt;/code&gt;&lt;/p&gt;
+        &lt;p&gt;and &lt;a href="https://docs.fastspring.com/activity-events-orders-and-subscriptions/test-orders?utm_source=Store&amp;utm_medium=Test_Instructions_Popup&amp;utm_content=Foundation&amp;utm_campaign=Store_Traffic" class="underline-link" target="_blank" rel="noopener noreferrer"&gt;CVC code found in the dashboard&lt;/a&gt;&lt;/p&gt;
+    &lt;/div&gt;
+</script>
+
+<script type="text/ng-template" id="requireEmail.html">
+  &lt;form name="emailOnlyForm" novalidate="novalidate" ng-submit="proceedWithEmail(emailOnlyForm)"&gt;
+    &lt;fieldset ng-disabled="processing"&gt;
+      &lt;div class="modal-header"&gt;
+        {{'EnterEmail' | phrase}}
+      &lt;/div&gt;
+      &lt;div class="modal-body small-bottom"&gt;
+        &lt;!-- //contact-group --&gt;
+        &lt;div class="row"&gt;
+          &lt;div class="col-xs-12"&gt;
+            &lt;div class="form-group" ng-class="validationClass(emailOnlyForm['contact.email'])"&gt;
+              &lt;label class="sr-only" for="contact-email"&gt;{{'Email' | phrase}}&lt;/label&gt;
+              &lt;!--span class="placeholder"&gt;{{'Email' | phrase}}&lt;/span--&gt;
+              &lt;div class="input-group"&gt;
+                &lt;span class="input-group-addon"&gt;&lt;span class="glyphicon glyphicon-envelope"&gt;&lt;/span&gt;&lt;/span&gt;
+                &lt;input type="email" input-model email="contact.email" lastname="contact.lastName" firstname="contact.firstName" ng-required="option.requireContact" name="contact.email" autocompletetype="email" spellcheck="off" autocorrect="off" ng-change="resetRemoteValidation(emailOnlyForm['contact.email'])" ng-model="contact.email" class="form-control" id="contact-email" placeholder="{{'Email' | phrase}}" ng-blur="sendEmailGa(emailOnlyForm['contact.email'])"&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- // end contact-group --&gt;
+      &lt;/div&gt;
+      &lt;!-- // end modal-body --&gt;
+      &lt;div class="modal-footer no-top"&gt;
+        &lt;button type="submit" class="btn btn-primary pay-button"&gt;{{'Continue' | phrase}} &lt;span class="glyphicon glyphicon-chevron-right"&gt;&lt;/span&gt;&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/fieldset&gt;
+  &lt;/form&gt;
+</script>
+
+<script src="https://d1f8f9xcsvx3ha.cloudfront.net/themes/core/8/core.js"></script>
+<script src="https://d1f8f9xcsvx3ha.cloudfront.net/themes/framework/2/framework.js"></script>
+<script src="https://d1f8f9xcsvx3ha.cloudfront.net/libs/raven/raven.min.js"></script>
+<script src="https://d1f8f9xcsvx3ha.cloudfront.net/libs/raven/plugins/angular.min.js"></script>
+<script src="https://d1zrkw1vilkm2v.cloudfront.net/gVJK5OAoRmg/VEqrqc9JQhI/resources/js/foundation.checkout.gz.js"></script>
+<script src="https://d1zrkw1vilkm2v.cloudfront.net/gVJK5OAoRmg/VEqrqc9JQhI/resources/js/common.gz.js"></script>
+<script src="https://d1f8f9xcsvx3ha.cloudfront.net/themes/sandbox/7/sandbox.js"></script>
+
+
+
+<div id="nspopover-1" class="ns-popover-list-theme popover bottom-center bottom ng-scope" style="position: absolute; display: none;">
+    <div class="arrow"></div>
+    <div class="modal-body text-center">
+        <p>You are accessing this storefront in test mode. You can purchase products using the card number</p>
+        <p><code>4242 4242 4242 4242</code></p>
+        <p>and <a href="https://docs.fastspring.com/activity-events-orders-and-subscriptions/test-orders?utm_source=Store&amp;utm_medium=Test_Instructions_Popup&amp;utm_content=Foundation&amp;utm_campaign=Store_Traffic" class="underline-link" target="_blank" rel="noopener noreferrer">CVC code found in the dashboard</a></p>
+    </div>
+</div><div class="modal-backdrop fade  in" ng-class="{in: animate}" ng-style="{'z-index': 1040 + (index &amp;&amp; 1 || 0) + index*10}" modal-backdrop="" style="z-index: 1040;"></div><div tabindex="-1" role="dialog" class="modal fade ng-isolate-scope dialog-small remove-transform in" ng-class="{in: animate}" ng-style="{'z-index': 1050 + index*10, display: 'block'}" ng-click="close($event)" modal-window="" window-class="dialog-small remove-transform" index="0" animate="animate" style="z-index: 1050; display: block;">
+    <div class="modal-dialog" ng-class="{'modal-sm': size == 'sm', 'modal-lg': size == 'lg'}"><div class="modal-content" modal-transclude="">
+    <form name="form" novalidate="novalidate" ng-submit="next(form)" class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-pattern">
+        <fieldset ng-disabled="processing">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="cancel()" aria-hidden="true">×</button>
+                <h4 class="modal-title my-title ng-binding"> Payment Information  </h4>
+            </div>
+
+            <div class="modal-body">
+                <!-- ngIf: paymentOptionType === 'alipay' -->
+
+                <div ng-show="messages.length" class="ng-hide">
+                    <!-- ngRepeat: msg in messages -->
+                </div>
+
+                <!-- //contact-group -->
+                <!-- ngIf: option.requireContact --><div ng-if="option.requireContact" class="contact-group ng-scope">
+                    <div class="row">
+                        <!-- ngIf: !reverseName --><div class="col-xs-6 ng-scope" ng-if="!reverseName">
+                            <div class="form-group" ng-class="validationClass(form['contact.firstName'])">
+                                <label class="sr-only ng-binding" for="contact-first-name">First Name</label> <span class="placeholder ng-binding">First Name</span>
+                                <input type="text" name="contact.firstName" input-model="" email="contact.email" lastname="contact.lastName" firstname="contact.firstName" ng-required="option.requireContact" ng-change="resetRemoteValidation(form['contact.firstName'])" ng-model="contact.firstName" class="form-control ng-isolate-scope ng-dirty ng-valid ng-valid-required ng-valid-remote-validation" id="contact-first-name" placeholder="First Name" ng-blur="sendNameGa(form['contact.firstName'], form['contact.lastName'])" required="required" />
+                            </div>
+                        </div><!-- end ngIf: !reverseName -->
+                        <div class="col-xs-6">
+                            <div class="form-group" ng-class="validationClass(form['contact.lastName'])">
+                                <label class="sr-only ng-binding" for="contact-last-name">Last Name</label> <span class="placeholder ng-binding">Last Name</span>
+                                <input type="text" name="contact.lastName" input-model="" email="contact.email" lastname="contact.lastName" firstname="contact.firstName" ng-required="option.requireContact" ng-change="resetRemoteValidation(form['contact.lastName'])" ng-model="contact.lastName" class="form-control ng-isolate-scope ng-dirty ng-valid ng-valid-required ng-valid-remote-validation" id="contact-last-name" placeholder="Last Name" ng-blur="sendNameGa(form['contact.lastName'], form['contact.lastName'])" required="required" />
+                            </div>
+                        </div>
+                        <!-- ngIf: reverseName -->
+                    </div>
+
+                    <!-- ngIf: variables.showCompanyField === 'enable' || variables.showCompanyField === 'require' -->
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group" ng-class="validationClass(form['contact.email'])">
+                                <label class="sr-only ng-binding" for="contact-email">Email</label> <span class="placeholder ng-binding">Email</span>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
+                                    <input type="email" name="contact.email" input-model="" email="contact.email" lastname="contact.lastName" firstname="contact.firstName" ng-required="option.requireContact" autocompletetype="email" spellcheck="off" autocorrect="off" ng-change="resetRemoteValidation(form['contact.email'])" ng-model="contact.email" class="form-control ng-isolate-scope ng-pristine ng-valid-email ng-valid ng-valid-required" id="contact-email" placeholder="Email" ng-blur="sendEmailGa(form['contact.email'],'Payment Window')" required="required" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- end ngIf: option.requireContact -->
+                <!-- // contact-group -->
+
+                <!-- //card-group -->
+                <!-- ngIf: option.requireCard --><div ng-if="option.requireCard" class="card-group ng-scope">
+                    <!-- //CC row -->
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group" ng-class="validationClass(form['card.number'])">
+                                <label class="sr-only ng-binding" for="card-number">Card Number</label>
+                                <span class="placeholder ng-binding">Card Number</span>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-credit-card"></span></span>
+                                    <input type="tel" ng-required="option.requireCard" name="card.number" credit-card-input="" credit-card-type="true" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" ng-change="resetRemoteValidation(form['card.number'])" ng-pattern="/^\d[\d ]+\d$/" ng-model="card.number" class="form-control ng-dirty ng-valid-required ng-valid ng-valid-pattern ng-valid-remote-validation" id="card-number" ng-blur="sendCardGa(form['card.number'], form['card.month'], form['card.year'],form['card.security'])" placeholder="Card Number" maxlength="24" required="required" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--// Begin Expire + Code row -->
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" ng-class="validationClass(form['card.month'], form['card.year'])">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+
+                                    <label class="sr-only ng-binding" for="card-expire-month">Card Expire Month</label>
+                                    <input type="tel" ng-required="option.requireCard" name="card.month" class="form-control form-control-half-inline ng-valid-pattern ng-dirty ng-valid ng-valid-required ng-valid-remote-validation" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" ng-change="resetRemoteValidation(form['card.month'], form['card.year'])" ng-pattern="/^\d{1,2}$/" ng-model="card.month" id="card-expire-month" ng-blur="sendCardGa(form['card.number'], form['card.month'], form['card.year'],form['card.security'])" placeholder="MM" required="required" />
+
+                                    <label class="sr-only ng-binding" for="card-expire-year">Card Expire Year</label>
+                                    <input type="tel" ng-required="option.requireCard" name="card.year" class="form-control form-control-half-inline ng-valid-remote-validation ng-dirty ng-valid-required ng-valid ng-valid-pattern" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" ng-change="resetRemoteValidation(form['card.year'], form['card.month'])" ng-pattern="/^\d{2,4}$/" ng-model="card.year" id="card-expire-year" ng-blur="sendCardGa(form['card.number'], form['card.month'], form['card.year'],form['card.security'])" placeholder="YY" required="required" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" ng-class="validationClass(form['card.security'])">
+                                <label class="sr-only ng-binding" for="card-security">Card Security Code</label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                                    <input type="text" id="card-security" name="card.security" ng-required="option.requireCard" ng-model="card.security" class="form-control ng-scope ng-dirty ng-valid-required ng-valid ng-valid-pattern ng-valid-remote-validation" ng-blur="sendCardGa(form['card.number'], form['card.month'], form['card.year'],form['card.security'])" autocomplete="off" autocorrect="off" spellcheck="off" autocapitalize="off" ng-change="resetRemoteValidation(form['card.security'])" ng-pattern="/^(\*\w+|[0-9]{3,4})$/" placeholder="CVC" ns-popover="" ns-popover-template="cardSecurityCodePopover.html" ns-popover-plain="false" ns-popover-placement="top|right" ns-popover-hide-on-inside-click="true" required="required" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--// End Expire + Code row -->
+                    <!-- ngIf: currency === 'BRL' -->
+
+                </div><!-- end ngIf: option.requireCard -->
+                <!-- //end card-group -->
+
+                <!-- Country -->
+                <input type="hidden" name="contact.country" ng-init="contact.country=country" ng-model="contact.country" ng-value="country" class="ng-pristine ng-valid" value="US" />
+
+                <!--
+                    Force phone number field
+                -->
+                <!-- ngIf: !option.requireShipping && variables.forcePhoneNumberCollection == 'true' && variables.forcePhysicalAddressCollection == 'false' -->
+                <!-- /forced-phone-number -->
+
+                <!--Billing Postal Code-->
+                <!-- postal-group -->
+                <!-- ngIf: option.requireBillingPostal && variables.forcePhysicalAddressCollection != 'true' && !option.requireShipping -->
+                <!-- / postal-group -->
+
+                <!--//Shipping / Recipient Information-->
+                <!-- ngIf: option.requireShipping || variables.forcePhysicalAddressCollection == 'true' --><div ng-if="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" class="ng-scope">
+                    <div class="panel panel-custom panel-default">
+                        <!-- ngIf: option.requireShipping -->
+                        <!-- ngIf: !option.requireShipping --><div class="panel-heading ng-scope" ng-if="!option.requireShipping">
+                            <h3 class="panel-title ng-binding" ng-class="{'text-center': variables.textAlign == 'center', 'text-right': variables.textAlign == 'right'}">Billing Address</h3>
+                        </div><!-- end ngIf: !option.requireShipping -->
+
+                        <div class="panel-body">
+                            <!-- ngInclude: getAddressTemplate() --><div id="address" ng-include="getAddressTemplate()" class="ng-scope">
+    <div class="ng-scope">
+        <div class="form-group" ng-class="validationClass(form['contact.addressline1'])">
+            <label class="sr-only ng-binding" for="contact-addressline1">Address</label>
+            <span class="placeholder ng-binding">Address</span>
+            <input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.addressline1'])" name="contact.addressline1" type="text" ng-model="contact.addressLine1" class="form-control ng-dirty ng-valid ng-valid-required ng-valid-remote-validation" id="contact-addressline1" placeholder="Address" required="required" />
+        </div>
+    </div>
+
+    <div class="row ng-scope">
+        <div class="col-xs-7">
+            <div class="form-group" ng-class="validationClass(form['contact.city'])">
+                <label class="sr-only ng-binding" for="contact-city">City</label>
+                <span class="placeholder ng-binding">City</span>
+                <input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.city'])" name="contact.city" type="text" ng-model="contact.city" class="form-control ng-dirty ng-valid ng-valid-required ng-valid-remote-validation" id="contact-city" placeholder="City" required="required" />
+            </div>
+        </div>
+        <div class="col-xs-5">
+            <!-- ngIf: regionList.US -->
+            <!-- ngIf: !regionList.US --><div class="form-group ng-scope" ng-class="validationClass(form['contact.region'])" ng-if="!regionList.US">
+                <label class="sr-only ng-binding" for="contact-region">State</label>
+                <span class="placeholder ng-binding">State</span>
+                <input ng-required="(option.requireShipping || variables.forcePhysicalAddressCollection == 'true') &amp;&amp; countryRequiresRegion" ng-change="resetRemoteValidation(form['contact.region'], form['contact.postalCode'])" name="contact.region" type="text" ng-model="contact.region" class="form-control ng-pristine ng-invalid ng-invalid-required" id="contact-region" placeholder="State" required="required" />
+            </div><!-- end ngIf: !regionList.US -->
+        </div>
+    </div>
+
+    <div class="row ng-scope">
+        <div class="col-xs-7">
+            <div class="form-group" ng-class="validationClass(form['contact.postalCode'])">
+                <label class="sr-only ng-binding" for="contact-postal">Zip Code</label>
+                <span class="placeholder ng-binding">Zip Code</span>
+                <input type="tel" ng-required="(option.requireShipping || variables.forcePhysicalAddressCollection == 'true') &amp;&amp; countryRequiresPostalCode" ng-change="resetRemoteValidation(form['contact.postalCode']); determineTax();" name="contact.postalCode" ng-model="contact.postalCode" class="form-control ng-dirty ng-valid ng-valid-required ng-valid-remote-validation" id="contact-postal" placeholder="Zip Code" required="required" />
+            </div>
+        </div>
+        <div class="col-xs-5 help-block">
+            <span ng-show="postalTax.calculating" class="postal-spinner glyphicon glyphicon-refresh spin ng-hide"></span>
+            <span class="postal-phrase"><span class="ng-binding">Tax:</span> <span ng-bind="postalTax.taxPhrase" class="ng-binding">$0.00 (0%)</span></span>
+        </div>
+    </div>
+
+    <!-- ngIf: option.requireShipping || variables.forcePhoneNumberCollection == 'false' || variables.forcePhysicalAddressCollection == 'true' --><div class="row ng-scope" ng-if="option.requireShipping || variables.forcePhoneNumberCollection == 'false' || variables.forcePhysicalAddressCollection == 'true'">
+        <div class="col-xs-12">
+            <div class="form-group" ng-class="validationClass(form['contact.phoneNumber'])">
+                <label class="sr-only ng-binding" for="contact-phone">Phone Number</label>
+                <span class="placeholder ng-binding">Phone Number</span>
+                <input ng-required="option.requireShipping || variables.forcePhysicalAddressCollection == 'true'" ng-change="resetRemoteValidation(form['contact.phoneNumber'])" name="contact.phoneNumber" type="text" ng-model="contact.phoneNumber" class="form-control ng-dirty ng-valid ng-valid-required ng-valid-remote-validation" id="contact-phone" placeholder="Phone Number" required="required" />
+            </div>
+        </div>
+    </div><!-- end ngIf: option.requireShipping || variables.forcePhoneNumberCollection == 'false' || variables.forcePhysicalAddressCollection == 'true' -->
+
+</div>
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="country-icon" ng-style="countryIconCss()" style="background-image: url(&quot;https://dcnz2rrcot657.cloudfront.net/country/shiny/24/US.png&quot;);">
+                                        <span ng-bind-html="countryDisplay" class="ng-binding">United States</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- end ngIf: option.requireShipping || variables.forcePhysicalAddressCollection == 'true' -->
+
+                <!-- / address-group -->
+                <!-- ngIf: containsAdhoc -->
+
+                <!-- ngIf: option.requireCustomerReference -->
+            </div> <!-- / modal-body -->
+
+            <div class="modal-footer">
+                <!-- ngIf: paymentOptionType != 'free' && !priceFree(total) -->
+                <!-- ngIf: paymentOptionType == 'free' -->
+                <!-- ngIf: paymentOptionType != 'free' && priceFree(total) --><button ng-hide="processing" ng-if="paymentOptionType != 'free' &amp;&amp; priceFree(total)" type="submit" class="btn placeOrderBtn pay-button ng-binding ng-scope">Save Payment Details<span class="glyphicon glyphicon-chevron-right"></span></button><!-- end ngIf: paymentOptionType != 'free' && priceFree(total) -->
+                <div><span class="glyphicon glyphicon-refresh spin total-pay-refresh"></span><span class="sr-only ng-binding">Please wait...</span></div>
+            </div>
+        </fieldset>
+    </form>
+</div></div>
+</div><div id="nspopover-2" class="ns-popover-list-theme popover top-right top ng-scope" style="position: absolute; display: none;">
+    <div class="arrow"></div>
+    <div credit-card-type-class="" class="modal-body card-security-code-popover small">
+      <span ng-hide="ccType === 'amex'" class="ng-binding">The CVC Number is a 3 digit number on the back of your card.</span>
+      <span ng-show="ccType === 'amex'" class="ng-binding ng-hide">The CID is a 4 digit number printed on the front of your card.</span>
+      <i class="cvv-hint"></i>
+    </div></div></body></html>

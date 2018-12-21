@@ -1,0 +1,7 @@
+{
+    "PAGE_WORDING" : {
+        "INVALID_COUPON": {
+            "invalidCouponMessage": "The promotional code you entered does not exist."
+        }
+    }
+}
